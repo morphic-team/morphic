@@ -1,55 +1,60 @@
 version: '2.0'
 
 services:
-  load_balancer:
-    image: jwilder/nginx-proxy
-    ports:
-      - 80:80
-      - 443:443
-    volumes:
-      - /var/run/docker.sock:/tmp/docker.sock:ro
-      - /usr/secrets/load_balancer/certs:/etc/nginx/certs:ro
-      - html:/usr/share/nginx/html
-      - vhost:/etc/nginx/vhost.d
-    labels:
-      com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy: "true"
-  letsencrypt_companion:
-    image: jrcs/letsencrypt-nginx-proxy-companion
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - /usr/secrets/load_balancer/certs:/etc/nginx/certs:rw
-      - html:/usr/share/nginx/html
-      - vhost:/etc/nginx/vhost.d
   website:
     build: ../../website/
     image: morphic-website
-    environment:
-      - LETSENCRYPT_HOST=morphs.io
-      - LETSENCRYPT_EMAIL=avoid3d@gmail.com
-      - VIRTUAL_HOST=morphs.io
-      - VIRTUAL_PORT=8080
-  background_work:
-    build: ../../backend/
-    image: morphic-background-work
-    env_file: ./backend.env
-    restart: always
-    command: python manage.py background_work
+    restart: unless-stopped
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=morphic
+      - traefik.http.routers.website-web.entryPoints=web,tunnel-web
+      - traefik.http.routers.website-web.rule=Host(`morphs.io`)
+      - traefik.http.routers.website-web.middlewares=redirect_scheme@file
+      - traefik.http.routers.website-websecure.entryPoints=websecure,tunnel-websecure
+      - traefik.http.routers.website-websecure.rule=Host(`morphs.io`)
+      - traefik.http.routers.website-websecure.tls=true
+      - traefik.http.routers.website-websecure.tls.certresolver=letsencrypt
+    volumes:
+      - ./settings.js:/usr/src/app/build/settings.js
+    networks:
+      - morphic
+      - internal
+  # background_work:
+    # build: ../../backend/
+    # image: morphic-background-work
+    # env_file: ./backend.env
+    # restart: always
+    # command: python manage.py background_work
+    # networks:
+    # - internal
   backend:
     build: ../../backend/
     image: morphic-backend
-    environment:
-      - LETSENCRYPT_HOST=api.morphs.io
-      - LETSENCRYPT_EMAIL=avoid3d@gmail.com
-      - VIRTUAL_HOST=api.morphs.io
-      - VIRTUAL_PORT=5000
+    restart: unless-stopped
     env_file: ./backend.env
-    restart: always
+    networks:
+      - internal
+      - morphic
+    labels:
+      - traefik.enable=true
+      - traefik.http.middlewares.backend_stripprefix.stripprefix.prefixes=/api
+      - traefik.docker.network=morphic
+      - traefik.http.routers.backend-websecure.entryPoints=web,tunnel-websecure
+      - traefik.http.routers.backend-websecure.rule=Host(`morphs.io`) && PathPrefix(`/api`)
+      - traefik.http.routers.backend-websecure.middlewares=backend_stripprefix
+      - traefik.http.routers.backend-websecure.tls=true
+      - traefik.http.routers.backend-websecure.tls.certresolver=letsencrypt
   postgres:
     image: postgres:9.6
+    restart: unless-stopped
     volumes:
-      - /mnt/morphic-database/postgresql/data:/var/lib/postgresql/data
+      - ./volumes/postgresql/data:/var/lib/postgresql/data
     env_file: ./postgres.env
+    networks:
+      - internal
 
-volumes:
-  vhost:
-  html:
+networks:
+  internal:
+  morphic:
+    name: morphic

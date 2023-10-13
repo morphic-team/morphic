@@ -5,20 +5,9 @@ services:
     build: ../../website/
     image: morphic-website
     restart: unless-stopped
-    labels:
-      - traefik.enable=true
-      - traefik.docker.network=morphic
-      - traefik.http.routers.website-web.entryPoints=web,tunnel-web
-      - traefik.http.routers.website-web.rule=Host(`morphs.io`)
-      - traefik.http.routers.website-web.middlewares=redirect_scheme@file
-      - traefik.http.routers.website-websecure.entryPoints=websecure,tunnel-websecure
-      - traefik.http.routers.website-websecure.rule=Host(`morphs.io`)
-      - traefik.http.routers.website-websecure.tls=true
-      - traefik.http.routers.website-websecure.tls.certresolver=letsencrypt
     volumes:
       - ./settings.js:/usr/src/app/build/settings.js
     networks:
-      - morphic
       - internal
       - cloudflared
   # background_work:
@@ -37,16 +26,6 @@ services:
     networks:
       - internal
       - cloudflared
-      - morphic
-    labels:
-      - traefik.enable=true
-      - traefik.http.middlewares.backend_stripprefix.stripprefix.prefixes=/api
-      - traefik.docker.network=morphic
-      - traefik.http.routers.backend-websecure.entryPoints=web,tunnel-websecure
-      - traefik.http.routers.backend-websecure.rule=Host(`morphs.io`) && PathPrefix(`/api`)
-      - traefik.http.routers.backend-websecure.middlewares=backend_stripprefix
-      - traefik.http.routers.backend-websecure.tls=true
-      - traefik.http.routers.backend-websecure.tls.certresolver=letsencrypt
   postgres:
     image: postgres:9.6
     restart: unless-stopped
@@ -65,5 +44,3 @@ services:
 networks:
   internal:
   cloudflared:
-  morphic:
-    name: morphic

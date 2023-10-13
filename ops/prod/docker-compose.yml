@@ -20,6 +20,7 @@ services:
     networks:
       - morphic
       - internal
+      - cloudflared
   # background_work:
     # build: ../../backend/
     # image: morphic-background-work
@@ -35,6 +36,7 @@ services:
     env_file: ./backend.env
     networks:
       - internal
+      - cloudflared
       - morphic
     labels:
       - traefik.enable=true
@@ -53,8 +55,15 @@ services:
     env_file: ./postgres.env
     networks:
       - internal
+  cloudflared:
+    image: cloudflare/cloudflared
+    command: tunnel --no-autoupdate run
+    networks:
+      - cloudflared
+    env_file: ./cloudflared.env
 
 networks:
   internal:
+  cloudflared:
   morphic:
     name: morphic

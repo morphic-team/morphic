@@ -13,8 +13,8 @@ services:
   background_work:
     build: ../../backend/
     image: morphic-background-work
-    env_file: ./backend.env
     restart: unless-stopped
+    env_file: ./backend.env
     command: python manage.py background_work
     networks:
       - internal
@@ -29,18 +29,20 @@ services:
   postgres:
     image: postgres:9.6
     restart: unless-stopped
+    env_file: ./postgres.env
     volumes:
       - ./volumes/postgresql/data:/var/lib/postgresql/data
-    env_file: ./postgres.env
     networks:
       - internal
   cloudflared:
     image: cloudflare/cloudflared
     command: tunnel --no-autoupdate run
+    restart: unless-stopped
+    env_file: ./cloudflared.env
     networks:
       - cloudflared
-    env_file: ./cloudflared.env
 
 networks:
   internal:
   cloudflared:
+    external: true

@@ -125,6 +125,59 @@ export CHROME_BINARY="/Applications/Google Chrome.app/Contents/MacOS/Google Chro
 - **NEVER** attribute commits to Claude unless explicitly requested by the user
 - Do not add Claude attribution to commit messages
 
+## Git Workflow
+
+### Semantic Commits via Pull Requests
+
+This project uses **semantic commit conventions** for the main branch history, implemented through a branch-and-PR workflow:
+
+#### Development Process:
+1. **Create feature branch** from main
+2. **Make normal commits** with descriptive messages during development
+3. **Create Pull Request** with semantic commit title
+4. **Squash and merge** to main, preserving the semantic PR title as the commit message
+
+#### Semantic Commit Format:
+```
+<type>(<scope>): <description>
+
+[optional body]
+
+[optional footer(s)]
+```
+
+#### Types:
+- `feat`: New features
+- `fix`: Bug fixes  
+- `docs`: Documentation changes
+- `style`: Code style/formatting (no logic changes)
+- `refactor`: Code refactoring (no feature/bug changes)
+- `perf`: Performance improvements
+- `test`: Adding or updating tests
+- `build`: Build system or dependency changes
+- `ci`: CI/CD pipeline changes
+- `chore`: Maintenance tasks
+
+#### Scopes (optional):
+- `service`: Backend API changes
+- `website`: Frontend application changes
+- `extension`: Browser extension changes
+- `docker`: Docker/deployment changes
+- `ci`: GitHub Actions workflows
+
+#### Examples:
+- `feat(website): add image toggle with archived state indicators`
+- `fix(service): resolve JWT validation for extension uploads`
+- `docs: add development workflow and semantic commit guidelines`
+- `ci: split Docker workflows for efficient builds`
+- `refactor(extension): migrate from JavaScript to TypeScript`
+
+#### Benefits:
+- **Clean main history**: Each commit represents a complete, tested change
+- **Flexible development**: Normal commits during feature development
+- **Automatic changelogs**: Semantic commits enable automated changelog generation
+- **Clear change tracking**: Easy to identify types of changes in history
+
 ## Handling Degenerate Data Cases
 
 When encountering unexpected data conditions (null values, empty arrays, divide by zero, etc.), **DO NOT** immediately add defensive code or edge case handling. Instead, **ALWAYS ASK** the user which of these three scenarios applies:

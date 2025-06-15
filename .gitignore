@@ -1,0 +1,29 @@
+# Repo-wide ignores
+
+# Docker data
+.docker-data
+volumes/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Editor files
+*.sublime-project
+*.sublime-workspace
+.vscode/
+.idea/
+
+# Temporary files
+*.tmp
+*.temp
+.cache
+
+# Docker Compose environment-specific overrides
+docker-compose.override.yml
+
+# Secrets (keep .sample files, ignore actual secrets)
+secrets/*.env
+
+# Claude Code local settings
+.claude/settings.local.json

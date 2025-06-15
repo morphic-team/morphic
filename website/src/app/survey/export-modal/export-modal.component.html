@@ -1,0 +1,92 @@
+<!-- Modal Backdrop -->
+<div *ngIf="isVisible" 
+     class="modal fade show d-block" 
+     tabindex="-1" 
+     role="dialog"
+     (click)="onBackdropClick($event)">
+  
+  <!-- Modal Dialog -->
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h5 class="modal-title">Export Survey Results</h5>
+        <button type="button" 
+                class="btn-close" 
+                aria-label="Close"
+                (click)="closeModal()">
+        </button>
+      </div>
+      
+      <!-- Modal Body -->
+      <div class="modal-body">
+        <div *ngIf="isLoading" class="text-center py-5">
+          <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
+
+        <div *ngIf="!isLoading">
+          <div class="mb-4">
+            <h6>Survey Summary</h6>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <strong>Survey Name:</strong>
+                  <p class="mb-0">{{ survey?.name || 'Unnamed Survey' }}</p>
+                </div>
+                <div class="mb-3">
+                  <strong>Total Search Results:</strong>
+                  <p class="mb-0">{{ resultsCount }}</p>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <strong>Number of Fields:</strong>
+                  <p class="mb-0">{{ survey?.fields?.length || 0 }}</p>
+                </div>
+                <div class="mb-3">
+                  <strong>Export Format:</strong>
+                  <p class="mb-0">CSV (Comma-Separated Values)</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="resultsCount === 0" class="alert alert-info">
+            <i class="bi bi-info-circle me-2"></i>
+            No results to export yet. Complete some search results first.
+          </div>
+        </div>
+      </div>
+      
+      <!-- Modal Footer -->
+      <div class="modal-footer">
+        <button type="button" 
+                class="btn btn-secondary" 
+                (click)="closeModal()"
+                [disabled]="isDownloading">
+          Cancel
+        </button>
+        <button type="button" 
+                class="btn btn-primary" 
+                (click)="downloadCSV()"
+                [disabled]="isDownloading || resultsCount === 0 || isLoading">
+          <span *ngIf="!isDownloading">
+            <i class="bi bi-download me-2"></i>
+            Download CSV
+          </span>
+          <span *ngIf="isDownloading">
+            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+            Downloading...
+          </span>
+        </button>
+      </div>
+      
+    </div>
+  </div>
+</div>
+
+<!-- Modal Backdrop Style -->
+<div *ngIf="isVisible" class="modal-backdrop fade show"></div>

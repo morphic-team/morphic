@@ -1,0 +1,30 @@
+{
+  "description": "Morphs.io Chrome Extension",
+  "devDependencies": {
+    "@eslint/js": "^9.28.0",
+    "@eslint/json": "^0.12.0",
+    "@types/chrome": "^0.0.326",
+    "@typescript-eslint/eslint-plugin": "^8.34.0",
+    "@typescript-eslint/parser": "^8.34.0",
+    "editorconfig-checker": "^6.0.1",
+    "eslint": "^9.28.0",
+    "eslint-config-prettier": "^10.1.5",
+    "prettier": "^3.5.3",
+    "typescript": "^5.8.3"
+  },
+  "name": "morphic-chrome-extension",
+  "private": true,
+  "scripts": {
+    "build:chrome": "node scripts/build.js --target=dev --browser=chrome",
+    "check": "npm run check:format && npm run check:lint && npm run check:type",
+    "check:format": "prettier --check src/ scripts/ *.json *.js",
+    "check:lint": "eslint src/ scripts/ package.json tsconfig.json",
+    "check:type": "tsc --noEmit",
+    "clean": "rm -rf dist/ .build/ *.crx *.zip",
+    "dev:chrome": "node scripts/build.js --target=dev --browser=chrome --watch",
+    "fix": "prettier --write src/ scripts/ *.json *.js && eslint src/ scripts/ package.json tsconfig.json --fix",
+    "package:cws": "node scripts/build.js --target=release --store=cws",
+    "preview:cws": "node scripts/build.js --target=preview --store=cws"
+  },
+  "version": "1.0.1"
+}

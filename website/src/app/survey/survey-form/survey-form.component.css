@@ -1,0 +1,30 @@
+.survey-form {
+  max-width: 100%;
+}
+
+.form-label {
+  font-weight: 500;
+}
+
+.text-danger {
+  margin-left: 4px;
+}
+
+.form-check {
+  margin-bottom: 8px;
+}
+
+.btn:disabled {
+  cursor: not-allowed;
+}
+
+/* Changed field indicators */
+.changed-field {
+  border-color: #ffc107 !important;
+  box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.25);
+}
+
+.changed-field:focus {
+  border-color: #ffc107 !important;
+  box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.5);
+}

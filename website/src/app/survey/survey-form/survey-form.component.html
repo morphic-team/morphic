@@ -1,0 +1,69 @@
+<div class="survey-form">
+  <div *ngIf="survey.fields.length === 0" class="text-muted text-center p-4">
+    <em>No fields to display.</em>
+  </div>
+
+  <form *ngIf="survey.fields.length > 0" (ngSubmit)="onSubmit()">
+    <div *ngFor="let field of getSortedFields(); let i = index" class="mb-3">
+      <label [for]="'field_' + i" class="form-label">
+        {{ field.label }}
+        <span *ngIf="isFieldChanged(field)" class="text-warning ms-1">*</span>
+      </label>
+
+      <!-- Text Field -->
+      <app-morphic-text *ngIf="field.fieldType === 'text'" 
+                        [ngClass]="{'changed-field': isFieldChanged(field)}"
+                        [inputId]="'field_' + i"
+                        [(ngModel)]="formValues[getFieldKey(field)]"
+                        [name]="'field_' + i"
+                        [disabled]="disabled"
+                        (ngModelChange)="onFieldValueChange(field, $event)">
+      </app-morphic-text>
+
+      <!-- Select Field -->
+      <app-morphic-select *ngIf="field.fieldType === 'select'" 
+                          [ngClass]="{'changed-field': isFieldChanged(field)}"
+                          [inputId]="'field_' + i"
+                          [(ngModel)]="formValues[getFieldKey(field)]"
+                          [name]="'field_' + i"
+                          [disabled]="disabled"
+                          [options]="getOptionsArray(field)"
+                          (ngModelChange)="onFieldValueChange(field, $event)">
+      </app-morphic-select>
+
+      <!-- Radio Field -->
+      <app-morphic-radio *ngIf="field.fieldType === 'radio'" 
+                         [ngClass]="{'changed-field': isFieldChanged(field)}"
+                         [inputId]="'field_' + i"
+                         [(ngModel)]="formValues[getFieldKey(field)]"
+                         [name]="'field_' + i"
+                         [disabled]="disabled"
+                         [options]="getOptionsArray(field)"
+                         (ngModelChange)="onFieldValueChange(field, $event)">
+      </app-morphic-radio>
+
+      <!-- Location Field -->
+      <div *ngIf="field.fieldType === 'location'" class="form-group">
+        <app-location-picker
+          [options]="{
+            height: '250px',
+            defaultLocation: formValues[getFieldKey(field)] || null,
+            disabled: disabled
+          }"
+          [ngClass]="{'changed-field': isFieldChanged(field)}"
+          [(ngModel)]="formValues[getFieldKey(field)]"
+          [name]="'field_' + i"
+          (ngModelChange)="onFieldValueChange(field, $event)">
+        </app-location-picker>
+      </div>
+
+    </div>
+
+    <div *ngIf="showSubmitButton && !disabled" class="mt-4">
+      <button type="submit" 
+              class="btn btn-primary">
+        {{ submitButtonText }}
+      </button>
+    </div>
+  </form>
+</div>

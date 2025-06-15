@@ -1,0 +1,61 @@
+.badge {
+  margin-right: 4px;
+  font-size: 0.875rem;
+}
+
+.badge-fixed-width {
+  min-width: 160px;
+  text-align: center;
+}
+
+.badge-wide {
+  min-width: 180px;
+  text-align: center;
+}
+
+.table td {
+  vertical-align: middle;
+}
+
+.table td.text-center:nth-child(4) {
+  padding-right: 16px;
+}
+
+.table td.text-center:nth-child(5) {
+  padding-left: 16px;
+}
+
+.table-info {
+  border: 2px solid #0dcaf0 !important;
+  box-shadow: 0 0 8px rgba(13, 202, 240, 0.3);
+}
+
+/* Remove default margins from pagination controls */
+::ng-deep .ngx-pagination {
+  margin-left: 0;
+  margin-bottom: 0 !important;
+}
+
+/* Table layout and column sizing */
+.table {
+  table-layout: fixed;
+  width: 100%;
+}
+
+.truncatable-column {
+  width: auto;
+  min-width: 200px;
+}
+
+.truncatable-text {
+  max-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  direction: rtl;
+  text-align: left;
+}
+
+.truncatable-text::before {
+  content: "\200E"; /* Left-to-right mark to fix text direction */
+}

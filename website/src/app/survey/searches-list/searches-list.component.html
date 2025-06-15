@@ -1,0 +1,86 @@
+<div>
+  <!-- Chrome Extension Notice -->
+  <div *ngIf="extensionStatus.isChecking" class="alert alert-info mb-3">
+    <div class="d-flex align-items-center">
+      <span class="spinner-border spinner-border-sm me-2"></span>
+      Checking Chrome extension...
+    </div>
+  </div>
+
+  <div *ngIf="!extensionStatus.isChecking && showExtensionNotice && !extensionStatus.isInstalled" class="alert alert-warning alert-dismissible mb-3">
+    <strong>Chrome Extension Required</strong>
+    <p class="mb-2 mt-2">To gather search results, install the Morphic Chrome extension.</p>
+    <a href="https://chrome.google.com/webstore/detail/fhigbmfhhlpkjbdamhjmfajhkfbkkgah" 
+       target="_blank" 
+       class="btn btn-sm btn-outline-primary me-2">
+      Install Extension
+    </a>
+    <button type="button" class="btn-close" aria-label="Close" (click)="dismissExtensionNotice()"></button>
+  </div>
+
+  <div *ngIf="!extensionStatus.isChecking && showExtensionNotice && isExtensionOutdated" class="alert alert-warning alert-dismissible mb-3">
+    <strong>Extension Update Required</strong>
+    <p class="mb-2 mt-2">Your Morphic extension (v{{extensionStatus.version}}) is outdated. Please update to v{{REQUIRED_EXTENSION_VERSION}}.</p>
+    <a href="https://chrome.google.com/webstore/detail/fhigbmfhhlpkjbdamhjmfajhkfbkkgah" 
+       target="_blank" 
+       class="btn btn-sm btn-outline-primary me-2">
+      Update Extension
+    </a>
+    <button type="button" class="btn-close" aria-label="Close" (click)="dismissExtensionNotice()"></button>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="searches.length === 0" class="text-center py-5">
+    <i class="bi bi-search fs-1 text-muted mb-3"></i>
+    <h6 class="text-muted">No searches yet</h6>
+    <p class="text-muted mb-3">Create a search to start gathering results.</p>
+    <button class="btn btn-primary" [routerLink]="['/surveys', surveyId, 'searches', 'create']">
+      Create Your First Search
+    </button>
+  </div>
+
+  <!-- Table State -->
+  <div *ngIf="searches.length > 0">
+    <div class="d-flex justify-content-end mb-3 me-3">
+      <button class="btn btn-outline-secondary btn-sm" (click)="refreshSearches()" [disabled]="isRefreshing">
+        <span *ngIf="isRefreshing" class="spinner-border spinner-border-sm me-2"></span>
+        Refresh
+      </button>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-hover mb-0">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Search Query</th>
+            <th>Description</th>
+            <th class="text-end">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let search of searches">
+            <td>{{ search.name }}</td>
+            <td>{{ search.searchQuery }}</td>
+            <td>{{ search.comments }}</td>
+            <td class="text-end">
+              <button *ngIf="search.areResultsUploaded" class="btn btn-sm btn-success" style="min-width: 130px;" disabled>
+                Results Gathered
+              </button>
+              <button *ngIf="!search.areResultsUploaded" (click)="runSearch(search)" class="btn btn-sm btn-primary" style="min-width: 130px;">
+                Gather Results
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="text-end mt-3 px-3">
+      <button class="btn btn-primary" [routerLink]="['/surveys', surveyId, 'searches', 'create']">
+        Create Search
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Gather Results Modal -->
+<app-gather-results-modal #gatherModal></app-gather-results-modal>

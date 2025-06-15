@@ -1,0 +1,45 @@
+<div class="py-4">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header">
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+              <li class="breadcrumb-item active" aria-current="page">Sign Up</li>
+            </ol>
+          </nav>
+        </div>
+        <div class="card-body">
+          <div class="alert alert-danger" role="alert" *ngIf="errorMessage">
+            {{ errorMessage }}
+          </div>
+
+          <form (ngSubmit)="signUp()">
+      <div class="mb-3">
+        <label class="form-label" for="emailInput">Email address</label>
+        <input [(ngModel)]="email" name="email" type="email" class="form-control" id="emailInput" placeholder="Enter your email address" required [disabled]="isSubmitting">
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label" for="passwordInput">Password</label>
+        <input [(ngModel)]="password" name="password" type="password" class="form-control" id="passwordInput" placeholder="Enter your password" required [disabled]="isSubmitting">
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label" for="confirmPasswordInput">Confirm Password</label>
+        <input [(ngModel)]="confirmPassword" name="confirmPassword" type="password" class="form-control" id="confirmPasswordInput" placeholder="Confirm your password" required [disabled]="isSubmitting">
+      </div>
+
+      <div class="d-flex justify-content-between align-items-center">
+        <a routerLink="/sign-in">Already have an account?</a>
+        <button type="submit" class="btn btn-primary" [disabled]="isSubmitting">
+          <span *ngIf="isSubmitting">Creating account...</span>
+          <span *ngIf="!isSubmitting">Sign up</span>
+        </button>
+      </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

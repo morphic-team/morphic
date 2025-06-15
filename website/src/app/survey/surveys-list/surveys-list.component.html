@@ -1,0 +1,115 @@
+<div class="py-4">
+  <div class="card">
+    <div class="card-header">
+      <div class="d-flex justify-content-between align-items-center">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item active" aria-current="page">All Surveys</li>
+          </ol>
+        </nav>
+        <div class="form-check form-switch">
+          <input class="form-check-input" 
+                 type="checkbox" 
+                 role="switch"
+                 id="showArchivedToggle"
+                 [(ngModel)]="showArchived"
+                 (ngModelChange)="refreshSurveys()">
+          <label class="form-check-label" for="showArchivedToggle">
+            Show Archived
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="!surveys$" class="d-flex justify-content-center py-5">
+      <div class="spinner-border" role="status">
+        <span class="visually-hidden">Loading surveys...</span>
+      </div>
+    </div>
+
+    <!-- Content State -->
+    <div *ngIf="surveys$ | async as surveys">
+      <!-- Empty State -->
+      <div *ngIf="surveys.length === 0" class="card-body text-center py-5">
+        <i class="bi bi-clipboard-data fs-1 text-muted mb-3"></i>
+        <h6 class="text-muted">No surveys yet</h6>
+        <p class="text-muted mb-3">Create your first survey to get started collecting data.</p>
+        <button (click)="createSurvey()" class="btn btn-primary">
+          Create Your First Survey
+        </button>
+      </div>
+
+      <!-- Table State -->
+      <div *ngIf="surveys.length > 0">
+        <div class="table-responsive">
+          <table class="table table-hover mb-0">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th width="100" class="text-end">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let survey of surveys" 
+                  [routerLink]="['/surveys', survey.id]"
+                  style="cursor: pointer">
+                <td>
+                  <span class="fw-semibold">{{ survey.name }}</span>
+                </td>
+                <td>{{ survey.comments }}</td>
+                <td (click)="$event.stopPropagation()" class="text-end">
+                  <div class="dropdown">
+                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle dropdown-toggle-no-arrow" 
+                            type="button" 
+                            [id]="'dropdownMenuButton' + survey.id" 
+                            data-bs-toggle="dropdown" 
+                            aria-expanded="false">
+                      <i class="bi bi-three-dots-vertical"></i>
+                    </button>
+                    <ul class="dropdown-menu" [attr.aria-labelledby]="'dropdownMenuButton' + survey.id">
+                      <li>
+                        <a class="dropdown-item" 
+                           href="#" 
+                           (click)="openExportModal(survey); $event.preventDefault()">
+                          <i class="bi bi-download me-2"></i>Export Data
+                        </a>
+                      </li>
+                      <li *ngIf="!survey.isArchived">
+                        <a class="dropdown-item" 
+                           href="#" 
+                           (click)="archiveSurvey(survey); $event.preventDefault()">
+                          <i class="bi bi-archive me-2"></i>Archive Survey
+                        </a>
+                      </li>
+                      <li *ngIf="survey.isArchived">
+                        <a class="dropdown-item" 
+                           href="#" 
+                           (click)="unarchiveSurvey(survey); $event.preventDefault()">
+                          <i class="bi bi-arrow-counterclockwise me-2"></i>Unarchive Survey
+                        </a>
+                      </li>
+                    </ul>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card-footer text-end">
+          <button (click)="createSurvey()" class="btn btn-primary">
+            Create Survey
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Export Modal -->
+  <app-export-modal
+    [surveyId]="selectedSurveyForExport?.id?.toString()"
+    [isVisible]="showExportModal"
+    (close)="closeExportModal()">
+  </app-export-modal>
+</div>

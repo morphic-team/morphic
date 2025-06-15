@@ -1,0 +1,299 @@
+<div>
+  <!-- Loading State -->
+  <div *ngIf="loading" class="d-flex justify-content-center py-5">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !loading" class="alert alert-danger" role="alert">
+    {{ error }}
+  </div>
+
+  <!-- Main Content -->
+  <div *ngIf="!loading && !error && searchResult && survey">
+    <!-- Header with omnibus navigation and actions -->
+    <div class="row px-3">
+      <!-- Search Result Details -->
+      <div class="col-md-6 mb-4">
+        <!-- Image Preview Card -->
+        <div class="card mb-3">
+          <div class="card-header d-flex justify-content-between align-items-center" style="min-height: 60px;">
+            <h5 class="card-title mb-0">Search Result #{{ searchResult.id }}</h5>
+            <div class="d-flex align-items-center gap-2">
+              <button type="button" 
+                      class="btn btn-outline-secondary btn-sm" 
+                      (click)="goBackToResults()"
+                      title="Return to search results list">
+                ← Back
+              </button>
+              <button type="button" 
+                      class="btn btn-outline-primary btn-sm" 
+                      (click)="goToPrevious()" 
+                      [disabled]="!hasPrevious || saving"
+                      title="Navigate to previous search result">
+                ← Previous
+              </button>
+              <button type="button" 
+                      class="btn btn-outline-primary btn-sm" 
+                      (click)="goToNext()" 
+                      [disabled]="!hasNext || saving"
+                      title="Navigate to next search result">
+                Next →
+              </button>
+            </div>
+          </div>
+          <div class="card-body text-center">
+            <div class="image-container">
+              <img [src]="getCurrentImageSrc()" 
+                   [alt]="'Search result from ' + searchResult.search.name"
+                   class="img-fluid search-result-image"
+                   (load)="onImageLoad()"
+                   (error)="onImageError($event)"
+                   [style.display]="imageLoaded ? 'block' : 'none'">
+              
+              <!-- Loading indicator -->
+              <div *ngIf="!imageLoaded && !imageError" class="d-flex justify-content-center py-3">
+                <div class="spinner-border spinner-border-sm" role="status">
+                  <span class="visually-hidden">Loading image...</span>
+                </div>
+                <span class="ms-2 text-muted">Loading image...</span>
+              </div>
+              
+              <!-- Error fallback -->
+              <div *ngIf="imageError" class="text-muted py-3">
+                <!-- Original image failed -->
+                <div *ngIf="!showCachedImage">
+                  <i class="bi bi-image" aria-hidden="true"></i>
+                  <p class="mb-0">Image could not be loaded</p>
+                  <small>
+                    <a [href]="searchResult.visibleLink" target="_blank" class="text-decoration-none">
+                      Open search result source page →
+                    </a>
+                  </small>
+                </div>
+                
+                <!-- Archived image failed (unexpected error) -->
+                <div *ngIf="showCachedImage" class="text-danger">
+                  <p class="mb-0">Failed to load archived image</p>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Image source toggle -->
+            <div class="text-center mt-2">
+              <div class="d-inline-flex align-items-center gap-2">
+                <span class="small" [class.text-muted]="!hasCachedImage" [class.text-body]="hasCachedImage && showCachedImage">
+                  {{ hasCachedImage ? 'Archived' : 'Archived (Not Available)' }}
+                </span>
+                <div class="form-check form-switch mb-0">
+                  <input class="form-check-input" 
+                         type="checkbox" 
+                         role="switch"
+                         [checked]="!showCachedImage"
+                         [disabled]="!hasCachedImage"
+                         (change)="toggleImageSource()">
+                </div>
+                <span class="small" [class.text-muted]="hasCachedImage && showCachedImage" [class.text-body]="!showCachedImage">Live</span>
+              </div>
+            </div>
+            
+            <!-- Search Result Metadata -->
+            <hr class="my-3">
+            <h6 class="fw-bold mb-2">Metadata</h6>
+            <table class="table table-sm table-borderless">
+              <tbody>
+                <tr>
+                  <td class="text-end fw-bold" style="width: 1%; white-space: nowrap; padding-right: 12px;">ID:</td>
+                  <td class="text-start">{{ searchResult.id }}</td>
+                </tr>
+                <tr>
+                  <td class="text-end fw-bold" style="width: 1%; white-space: nowrap; padding-right: 12px;">Search Query:</td>
+                  <td class="text-start"><span class="badge bg-info">{{ searchResult.search.name }}</span></td>
+                </tr>
+                <tr>
+                  <td class="text-end fw-bold" style="width: 1%; white-space: nowrap; padding-right: 12px;">Source Page:</td>
+                  <td class="text-start">
+                    <a [href]="searchResult.visibleLink" target="_blank" class="text-break link-external">
+                      {{ getDisplayUrl(searchResult.visibleLink) }}
+                      <i class="bi bi-box-arrow-up-right ms-1" aria-hidden="true"></i>
+                    </a>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="text-end fw-bold" style="width: 1%; white-space: nowrap; padding-right: 12px;">Image URL:</td>
+                  <td class="text-start">
+                    <a [href]="searchResult.directLink" target="_blank" class="text-break link-external">
+                      {{ getDisplayUrl(searchResult.directLink) }}
+                      <i class="fa fa-external-link-alt ms-1" aria-hidden="true"></i>
+                    </a>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="text-end fw-bold" style="width: 1%; white-space: nowrap; padding-right: 12px;">Completion State:</td>
+                  <td class="text-start">
+                    <span class="badge" 
+                          [ngClass]="{
+                            'bg-success': searchResult.completionState === 'DONE',
+                            'bg-warning': searchResult.completionState === 'REVISIT',
+                            'bg-danger': searchResult.completionState === 'NOT_USABLE'
+                          }">
+                      {{ getCompletionStateDisplayText(searchResult.completionState) }}
+                    </span>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="text-end fw-bold" style="width: 1%; white-space: nowrap; padding-right: 12px;">Duplicate State:</td>
+                  <td class="text-start">
+                    <span *ngIf="searchResult.duplicateOfId">
+                      Duplicate of 
+                      <a [routerLink]="['/surveys', surveyId, 'search-results', 'page', currentPage, 'result', searchResult.duplicateOfId]" 
+                         [queryParams]="{ returnPage: (returnPage || currentPage), returnResult: (returnResultId || searchResult.id) }"
+                         class="text-decoration-none link-primary">
+                        #{{ searchResult.duplicateOfId }}
+                      </a>
+                    </span>
+                    <span *ngIf="!searchResult.duplicateOfId" class="badge" [ngClass]="getProcessingBadgeClass(searchResult.imageScrapedState)">
+                      {{ getProcessingStatusText(searchResult.imageScrapedState) }}
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            
+            <!-- Duplicate Pool Section -->
+            <hr class="my-3">
+            <h6 class="fw-bold mb-2" 
+                *ngIf="searchResult.duplicatePool && searchResult.duplicatePool.length > 1"
+                title="All search results identified as the same image">
+              Duplicate Pool ({{ searchResult.duplicatePool.length }} total)
+            </h6>
+            <h6 class="fw-bold mb-2" 
+                *ngIf="!searchResult.duplicatePool || searchResult.duplicatePool.length <= 1">
+              Duplicate Pool
+            </h6>
+            <div *ngIf="searchResult.duplicatePool && searchResult.duplicatePool.length > 0">
+              <table class="table table-sm table-borderless mb-0">
+                <tbody>
+                  <tr *ngFor="let duplicate of searchResult.duplicatePool"
+                      [ngClass]="{'table-info': duplicate.id === searchResult.id}">
+                    <td class="text-end" style="width: 1%; white-space: nowrap; padding-right: 8px;">
+                      <a [routerLink]="['/surveys', surveyId, 'search-results', 'page', currentPage, 'result', duplicate.id]" 
+                         [queryParams]="duplicate.id !== searchResult.id ? { returnPage: (returnPage || currentPage), returnResult: (returnResultId || searchResult.id) } : {}"
+                         class="text-decoration-none"
+                         [ngClass]="{'fw-bold': duplicate.id === searchResult.id}">
+                        #{{ duplicate.id }}
+                      </a>
+                    </td>
+                    <td class="text-center" style="width: 140px; padding-left: 8px; padding-right: 8px;">
+                      <span *ngIf="!duplicate.duplicateOfId" class="badge bg-success small">canonical</span>
+                      <span *ngIf="duplicate.duplicateOfId" class="badge bg-secondary small">duplicate</span>
+                    </td>
+                    <td class="text-start" style="padding-left: 8px;">
+                      <span class="text-muted small">
+                        {{ getDisplayUrl(duplicate.visibleLink) }}
+                      </span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div *ngIf="!searchResult.duplicatePool || searchResult.duplicatePool.length === 0">
+              <p class="text-muted small mb-0">
+                This search result has not been processed for duplicate detection yet. Once processed, 
+                it will appear here as canonical, and any duplicates found will be listed as well.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Survey Form -->
+      <div class="col-md-6">
+        <div class="card" [ngClass]="{
+          'unsaved-changes': hasUnsavedChanges,
+          'completion-state-revisit': selectedCompletionState === 'REVISIT',
+          'completion-state-done': selectedCompletionState === 'DONE',
+          'completion-state-not-usable': selectedCompletionState === 'NOT_USABLE'
+        }">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Survey for Search Result #{{ searchResult.id }}</h5>
+            <div *ngIf="hasUnsavedChanges" class="d-flex align-items-center gap-2">
+                <span class="text-warning">
+                  <i class="bi bi-exclamation-triangle" aria-hidden="true"></i>
+                  Unsaved changes
+                </span>
+                <button type="button" 
+                        class="btn btn-outline-secondary btn-xs" 
+                        (click)="revertChanges()" 
+                        [disabled]="saving"
+                        title="Discard all unsaved changes">
+                  Revert Changes
+                </button>
+              </div>
+          </div>
+          <div class="card-body">
+            <!-- Form Controls (Top) -->
+            <app-search-result-form-controls
+              [hasUnsavedChanges]="hasUnsavedChanges"
+              [saving]="saving"
+              [hasNext]="hasNext"
+              (revertChanges)="revertChanges()"
+              (saveForm)="saveForm()"
+              (saveAndNext)="saveAndNext($event)">
+            </app-search-result-form-controls>
+            
+            <hr class="my-3">
+            
+            <!-- Completion State Selector -->
+            <div class="mb-3">
+              <label for="completionState" class="form-label">
+                <strong>Completion State</strong>
+                <span *ngIf="selectedCompletionState !== originalCompletionState" 
+                      class="text-warning ms-1">*</span>
+              </label>
+              <select 
+                id="completionState" 
+                class="form-select" 
+                [(ngModel)]="selectedCompletionState"
+                (ngModelChange)="onCompletionStateChange()"
+                [disabled]="saving"
+                [ngClass]="{'changed-field': selectedCompletionState !== originalCompletionState}">
+                <option value="REVISIT">Revisit</option>
+                <option value="DONE">Done</option>
+                <option value="NOT_USABLE">Not Usable</option>
+              </select>
+            </div>
+            
+            <app-survey-form
+              [survey]="survey"
+              [initialValues]="getInitialFormValues()"
+              [changedFields]="changedFields"
+              [disabled]="saving"
+              [showSubmitButton]="false"
+              (formSubmit)="onFormSubmit($event)"
+              (fieldChange)="onFieldChange($event)">
+            </app-survey-form>
+            
+            <!-- Form Controls (Bottom) -->
+            <hr class="mt-4">
+            <app-search-result-form-controls
+              [hasUnsavedChanges]="hasUnsavedChanges"
+              [saving]="saving"
+              [hasNext]="hasNext"
+              (revertChanges)="revertChanges()"
+              (saveForm)="saveForm()"
+              (saveAndNext)="saveAndNext($event)">
+            </app-search-result-form-controls>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Success/Error Messages -->
+    <div *ngIf="saving" class="alert alert-info mt-3" role="alert">
+      <strong>Saving...</strong> Please wait while we save your data.
+    </div>
+  </div>
+</div>

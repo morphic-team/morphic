@@ -1,0 +1,21 @@
+.modal-body ol {
+  padding-left: 1.25rem;
+}
+
+.modal-body ol li {
+  margin-bottom: 0.25rem;
+}
+
+.card-body h6 {
+  font-size: 0.95rem;
+  margin-bottom: 0.75rem;
+}
+
+.alert-warning {
+  border-left: 4px solid #ffc107;
+}
+
+.spinner-border-sm {
+  width: 1rem;
+  height: 1rem;
+}

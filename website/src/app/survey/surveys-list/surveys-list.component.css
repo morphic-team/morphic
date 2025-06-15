@@ -1,0 +1,11 @@
+/* Component-specific styles for surveys list */
+
+/* Hide the dropdown arrow for the three dots button */
+.dropdown-toggle-no-arrow::after {
+  display: none !important;
+}
+
+/* Ensure table takes up minimum space to prevent dropdown overlap */
+.table-responsive {
+  min-height: 200px;
+}

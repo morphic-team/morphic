@@ -1,0 +1,42 @@
+services:
+  website:
+    image: ghcr.io/morphic-team/morphic-website:latest
+    container_name: morphic-website
+    restart: unless-stopped
+    networks:
+      - internal
+  service-worker:
+    image: ghcr.io/morphic-team/morphic-service:latest
+    container_name: morphic-service-worker
+    restart: unless-stopped
+    env_file: ./secrets/backend.env
+    environment:
+      - FLASK_APP=backend:create_app
+      - MORPHIC_PUBLIC_BASE_URL=https://morphs.io
+      - GOOGLE_SEARCH_BASE_URL=https://google.com
+    command: flask run-worker --threads 4
+    networks:
+      - internal
+  service:
+    image: ghcr.io/morphic-team/morphic-service:latest
+    container_name: morphic-service
+    restart: unless-stopped
+    env_file: ./secrets/backend.env
+    environment:
+      - MORPHIC_PUBLIC_BASE_URL=https://morphs.io
+      - GOOGLE_SEARCH_BASE_URL=https://google.com
+    networks:
+      - internal
+  postgres:
+    image: postgres:9.6
+    container_name: morphic-postgres
+    restart: unless-stopped
+    env_file: ./secrets/postgres.env
+    volumes:
+      - ./volumes/postgresql/data:/var/lib/postgresql/data
+    networks:
+      - internal
+networks:
+  internal:
+    driver_opts:
+      com.docker.network.driver.mtu: 1450

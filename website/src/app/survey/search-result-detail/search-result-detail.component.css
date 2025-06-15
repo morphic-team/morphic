@@ -1,0 +1,59 @@
+/* Unsaved changes visual indicators */
+.unsaved-changes {
+  background-color: #fff9e6;
+}
+
+/* Completion state border indicators */
+.completion-state-revisit {
+  border: 2px solid #ffc107;
+}
+
+.completion-state-done {
+  border: 2px solid #198754;
+}
+
+.completion-state-not-usable {
+  border: 2px solid #dc3545;
+}
+
+.changed-field {
+  border-color: #ffc107 !important;
+  box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.25);
+}
+
+.changed-field:focus {
+  border-color: #ffc107 !important;
+  box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.5);
+}
+
+/* Image display styling */
+.image-container {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f8f9fa;
+}
+
+.search-result-image {
+  max-height: 300px;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Form card header consistent height */
+.col-md-6:last-child .card-header {
+  min-height: 60px;
+}
+
+/* External link styling */
+.link-external {
+  word-break: break-all;
+}
+
+.link-external i {
+  font-size: 0.8em;
+  opacity: 0.7;
+}
+

@@ -1,0 +1,47 @@
+<nav class="navbar navbar-expand-lg bg-light">
+  <div class="container-wider">
+    <!-- Brand -->
+    <a class="navbar-brand ms-2" routerLink="/surveys">
+      <span class="bi bi-feather pe-1"></span> Morphic
+    </a>
+
+    <!-- Navbar links (always shown for desktop) -->
+    <ul class="navbar-nav me-auto">
+      <!-- If user is signed in -->
+      <li class="nav-item" *ngIf="user$ | async as user">
+        <a routerLink="/surveys" routerLinkActive="active" ariaCurrentWhenActive="page" class="nav-link">Surveys</a>
+      </li>
+
+      <!-- Always show Instructions and Privacy links -->
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/instructions" routerLinkActive="active" ariaCurrentWhenActive="page">Instructions</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/privacy" routerLinkActive="active" ariaCurrentWhenActive="page">Privacy</a>
+      </li>
+    </ul>
+
+    <!-- Authentication actions on the right when not signed in -->
+    <div class="navbar-nav ms-auto" *ngIf="!(user$ | async)">
+      <a routerLink="/sign-up" class="btn btn-outline-primary me-2">Sign Up</a>
+      <a routerLink="/sign-in" class="btn btn-primary">Sign In</a>
+    </div>
+
+    <!-- User dropdown on the right when signed in -->
+    <ul class="navbar-nav ms-auto" *ngIf="user$ | async as user">
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          {{ user.emailAddress }}
+        </a>
+        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <li>
+            <a class="dropdown-item" (click)="signOut()">
+              <span class="bi bi-box-arrow-right pe-1"></span> Logout
+            </a>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+</nav>
+

@@ -1,0 +1,99 @@
+<div>
+  <!-- Filter and Pagination Controls -->
+  <div class="mb-3 position-relative d-flex justify-content-center align-items-center">
+    <!-- Centered pagination controls -->
+    <pagination-controls 
+      id="searchResults" 
+      (pageChange)="onPageChange($event)"
+      previousLabel=""
+      nextLabel="">
+    </pagination-controls>
+    
+    <!-- Right-positioned dropdowns -->
+    <div class="position-absolute end-0 d-flex align-items-center gap-3">
+      <div class="d-flex align-items-center">
+        <label for="perPageSelect" class="col-form-label me-2">Per page:</label>
+        <select 
+          id="perPageSelect"
+          class="form-select w-auto" 
+          [(ngModel)]="perPage" 
+          (change)="onPerPageChange()">
+          <option *ngFor="let option of perPageOptions" [value]="option">{{ option }}</option>
+        </select>
+      </div>
+      
+      <div class="d-flex align-items-center">
+        <label for="completionStateFilter" class="col-form-label me-2">Completion State:</label>
+        <select 
+          id="completionStateFilter"
+          class="form-select w-auto" 
+          [(ngModel)]="completionStateFilter" 
+          (change)="onFilterChange()">
+          <option [ngValue]="null">All</option>
+          <option [ngValue]="CompletionState.DONE">Done</option>
+          <option [ngValue]="CompletionState.REVISIT">Revisit</option>
+          <option [ngValue]="CompletionState.NOT_USABLE">Not Usable</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Results Table -->
+  <div class="table-responsive">
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th style="width: 80px;">ID</th>
+          <th class="truncatable-column">Source Page</th>
+          <th class="truncatable-column">Image Filename</th>
+          <th class="text-center" style="width: 160px;">Completion State</th>
+          <th class="text-center" style="width: 200px;">Duplicate State</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let searchResult of searchResults | paginate: { id: 'searchResults', itemsPerPage: perPage, currentPage: currentPage, totalItems: totalSearchResults }" 
+            [routerLink]="['/surveys', surveyId, 'search-results', 'page', currentPage, 'result', searchResult.id]"
+            [attr.data-result-id]="searchResult.id"
+            style="cursor: pointer"
+            [ngClass]="{
+              'table-success': searchResult.completionState === 'DONE',
+              'table-warning': searchResult.completionState === 'REVISIT',
+              'table-danger': searchResult.completionState === 'NOT_USABLE',
+              'table-info': searchResult.id === highlightResultId
+            }">
+          <td>{{ searchResult.id }}</td>
+          <td class="truncatable-text" [title]="searchResult.visibleLink">{{ searchResult.visibleLink }}</td>
+          <td class="truncatable-text" [title]="getImageFilename(searchResult.directLink)">{{ getImageFilename(searchResult.directLink) }}</td>
+          <td class="text-center">
+            <span class="badge badge-fixed-width"
+                  [ngClass]="{
+                    'bg-success': searchResult.completionState === 'DONE',
+                    'bg-warning': searchResult.completionState === 'REVISIT',
+                    'bg-danger': searchResult.completionState === 'NOT_USABLE'
+                  }">
+              {{ getCompletionStateText(searchResult.completionState) }}
+            </span>
+          </td>
+          <td class="text-center">
+            <span class="badge badge-wide" [ngClass]="getDuplicateProcessingBadgeClass(searchResult)">
+              {{ getDuplicateProcessingText(searchResult) }}
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination -->
+  <div class="d-flex justify-content-center mt-3">
+    <pagination-controls 
+      (pageChange)="onPageChange($event)" 
+      [id]="'searchResults'" 
+      [maxSize]="5"
+      [directionLinks]="true"
+      [autoHide]="true"
+      previousLabel=""
+      nextLabel="">
+    </pagination-controls>
+  </div>
+</div>

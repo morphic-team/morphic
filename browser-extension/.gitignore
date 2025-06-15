@@ -1,0 +1,15 @@
+# Build artifacts
+.build/
+dist/
+
+# Node modules
+node_modules/
+
+# Secrets
+private.pem
+
+# Archives
+*.zip
+*.crx
+
+# OS-specific files handled in repo root .gitignore

@@ -1,0 +1,92 @@
+<div class="survey-builder">
+        
+        <!-- Survey Immutability Warning -->
+        <div *ngIf="shouldShowWarning" class="alert alert-info alert-dismissible fade show" role="alert">
+          <strong>Important:</strong> Once you create this survey, you will not be able to edit or modify its fields. 
+          Please carefully consider which form fields you need before finalizing your survey.
+          <button type="button" 
+                  class="btn-close" 
+                  aria-label="Close"
+                  (click)="dismissWarning()">
+          </button>
+        </div>
+        
+        <!-- Existing Fields List -->
+        <div class="mb-4" *ngIf="survey.fields.length > 0">
+          <div class="list-group">
+            <div *ngFor="let field of survey.fields; let i = index" class="list-group-item">
+              <div class="d-flex justify-content-between align-items-start">
+                <div class="flex-grow-1">
+                  <div class="mb-2">
+                    <span class="fw-bold">Field Name: </span><span class="fw-normal">{{ field.label }}</span>
+                  </div>
+                  <div class="mb-2">
+                    <span class="fw-bold">Field Type: </span><span class="fw-normal">{{ getFieldTypeLabel(field.fieldType) }}</span>
+                  </div>
+                  <div *ngIf="field.options" class="mb-1">
+                    <span class="fw-bold">Options: </span><span class="fw-normal">{{ field.options }}</span>
+                  </div>
+                </div>
+                <div class="btn-group-vertical btn-group-sm">
+                  <button type="button" class="btn btn-outline-secondary" (click)="moveFieldUp(i)" [disabled]="i === 0">
+                    ↑
+                  </button>
+                  <button type="button" class="btn btn-outline-secondary" (click)="moveFieldDown(i)" [disabled]="i === survey.fields.length - 1">
+                    ↓
+                  </button>
+                  <button type="button" class="btn btn-outline-danger" (click)="removeField(i)">
+                    ×
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Add Field Button (only show when there are fields and form is hidden) -->
+        <div class="mb-3 d-flex justify-content-end" *ngIf="survey.fields.length > 0 && !showAddFieldForm">
+          <button type="button" class="btn btn-primary" (click)="toggleAddFieldForm()">
+            Add Field
+          </button>
+        </div>
+
+        <!-- Add Field Form -->
+        <div *ngIf="survey.fields.length === 0 || showAddFieldForm" class="card bg-light">
+          <div class="card-body">
+            <h6>Add New Field</h6>
+            
+            <div class="mb-3">
+              <label for="fieldLabel" class="form-label">Field Label</label>
+              <input type="text" class="form-control" id="fieldLabel" 
+                     [(ngModel)]="addFieldForm.label" 
+                     placeholder="Enter field label">
+            </div>
+
+            <div class="mb-3">
+              <label for="fieldType" class="form-label">Field Type</label>
+              <select class="form-control" id="fieldType" [(ngModel)]="addFieldForm.fieldType">
+                <option *ngFor="let type of fieldTypes" [ngValue]="type">{{ type.label }}</option>
+              </select>
+            </div>
+
+            <div class="mb-3" *ngIf="requiresOptions(addFieldForm.fieldType)">
+              <label for="fieldOptions" class="form-label">Options</label>
+              <input type="text" class="form-control" id="fieldOptions" 
+                     [(ngModel)]="addFieldForm.options" 
+                     placeholder="Enter options separated by commas">
+              <small class="form-text text-muted">Example: Option 1, Option 2, Option 3</small>
+            </div>
+
+
+            <div class="d-flex" [ngClass]="survey.fields.length > 0 ? 'justify-content-between' : 'justify-content-end'">
+              <button *ngIf="survey.fields.length > 0" type="button" class="btn btn-secondary" (click)="toggleAddFieldForm()">
+                Cancel
+              </button>
+              <button type="button" class="btn btn-primary" (click)="addField()" [disabled]="!addFieldForm.label.trim()">
+                Add Field
+              </button>
+            </div>
+          </div>
+        </div>
+
+</div>

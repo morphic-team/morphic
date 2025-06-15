@@ -1,0 +1,56 @@
+<div class="survey-preview">
+  <div *ngIf="survey.fields.length === 0" class="text-muted text-center p-4">
+    <em>Survey fields will appear here</em>
+  </div>
+
+  <form *ngIf="survey.fields.length > 0">
+    <div *ngFor="let field of survey.fields" class="mb-3">
+      <label [for]="field.id" class="form-label">
+        {{ field.label }}
+      </label>
+
+      <!-- Text Field -->
+      <app-morphic-text *ngIf="field.fieldType === 'text'" 
+                        [inputId]="field.id"
+                        [(ngModel)]="previewValues[field.id]"
+                        [name]="field.id">
+      </app-morphic-text>
+
+      <!-- Select Field -->
+      <app-morphic-select *ngIf="field.fieldType === 'select'" 
+                          [inputId]="field.id"
+                          [(ngModel)]="previewValues[field.id]"
+                          [name]="field.id"
+                          [options]="getOptionsArray(field)">
+      </app-morphic-select>
+
+      <!-- Radio Field -->
+      <app-morphic-radio *ngIf="field.fieldType === 'radio'" 
+                         [inputId]="field.id"
+                         [(ngModel)]="previewValues[field.id]"
+                         [name]="field.id"
+                         [options]="getOptionsArray(field)">
+      </app-morphic-radio>
+
+      <!-- Location Field -->
+      <div *ngIf="field.fieldType === 'location'" class="mb-3">
+        <app-location-picker
+          [options]="{
+            height: '250px',
+            defaultLocation: previewValues[field.id] || null
+          }"
+          [(ngModel)]="previewValues[field.id]"
+          [name]="field.id">
+        </app-location-picker>
+        <small class="form-text text-muted">Click on the map to select a location</small>
+      </div>
+
+    </div>
+
+    <div class="mt-4 p-3 bg-light border rounded">
+      <small class="text-muted">
+        <strong>Preview Mode:</strong> This is how the survey will appear
+      </small>
+    </div>
+  </form>
+</div>

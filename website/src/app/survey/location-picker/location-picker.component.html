@@ -1,0 +1,31 @@
+<div class="location-picker">
+  <div class="location-info mb-2" *ngIf="hasLocation">
+    <div class="d-flex justify-content-between align-items-center">
+      <small class="text-muted">
+        <i class="bi bi-geo-alt"></i> {{ locationDisplay }}
+      </small>
+      <button 
+        type="button" 
+        class="btn btn-sm btn-outline-danger"
+        (click)="clearLocation()"
+        [disabled]="disabled">
+        Clear Location
+      </button>
+    </div>
+  </div>
+  
+  <div class="map-container">
+    <div 
+      #mapContainer
+      class="map-element"
+      [class.disabled]="disabled">
+    </div>
+  </div>
+  
+  <div class="map-instructions mt-2" *ngIf="!disabled">
+    <small class="text-muted">
+      <i class="bi bi-info-circle"></i>
+      {{ hasLocation ? 'Use the search box, click on the map, or drag the marker to change location' : 'Use the search box or click on the map to select a location' }}
+    </small>
+  </div>
+</div>

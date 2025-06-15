@@ -1,0 +1,23 @@
+# Development overrides for docker-compose.yml
+# Usage: cp docker-compose.dev.override.yml docker-compose.override.yml && docker-compose up
+
+services:
+  website:
+    build: ./website/
+    image: morphic-website:dev
+    
+  service-worker:
+    build: ./service/
+    image: morphic-service-worker:dev
+    # Add development-specific environment variables if needed
+    # environment:
+    #   - DEBUG=true
+    
+  service:
+    build: ./service/
+    image: morphic-service:dev
+    # Mount source code for development (uncomment if needed)
+    # volumes:
+    #   - ./service:/app
+    # Override command for development server if needed
+    # command: flask run --host=0.0.0.0 --port=5000 --debug

@@ -1,0 +1,25 @@
+services:
+  morphic-analysis:
+    build: .
+    container_name: morphic-analysis
+    volumes:
+      - ./data:/app/data
+      - ./results:/app/results
+      - ./scripts:/app/scripts
+      - ./docs:/app/docs
+    working_dir: /app
+    stdin_open: true
+    tty: true
+    environment:
+      - PYTHONPATH=/app
+    networks:
+      - default
+    ports:
+      - "8888:8888"
+    command: jupyter notebook --ip=0.0.0.0 --port=8888 --no-browser --allow-root
+
+networks:
+  default:
+    driver: bridge
+    driver_opts:
+      com.docker.network.driver.mtu: 1450

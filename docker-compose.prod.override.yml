@@ -1,0 +1,31 @@
+# Production-specific services and overrides
+# Usage: cp docker-compose.prod.override.yml docker-compose.override.yml && docker-compose up
+
+services:
+  # Add cloudflared network to website for production tunnel access
+  website:
+    networks:
+      - internal
+      - cloudflared
+
+  # Add cloudflared network to service for production tunnel access  
+  service:
+    networks:
+      - internal
+      - cloudflared
+
+  # Cloudflared tunnel service (production only)
+  cloudflared:
+    image: cloudflare/cloudflared
+    container_name: morphic-cloudflared
+    command: tunnel --no-autoupdate run
+    restart: unless-stopped
+    env_file: ./secrets/cloudflared.env
+    networks:
+      - cloudflared
+
+networks:
+  # Add cloudflared network for production
+  cloudflared:
+    driver_opts:
+      com.docker.network.driver.mtu: 1450

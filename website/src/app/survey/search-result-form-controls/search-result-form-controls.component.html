@@ -1,0 +1,53 @@
+<div class="form-controls-section">
+  <div class="d-flex flex-wrap gap-2 justify-content-center">
+    <button type="button" 
+            class="btn btn-secondary btn-sm" 
+            (click)="onRevertChanges()" 
+            [disabled]="!hasUnsavedChanges || saving"
+            (mouseenter)="onHoverEnter('Discard all unsaved changes')"
+            (mouseleave)="onHoverLeave()">
+      Revert Changes
+    </button>
+    
+    <button type="button" 
+            class="btn btn-primary btn-sm" 
+            (click)="onSaveForm()" 
+            [disabled]="!hasUnsavedChanges || saving"
+            (mouseenter)="onHoverEnter('Save form data and completion state')"
+            (mouseleave)="onHoverLeave()">
+      {{ saving ? 'Saving...' : 'Save Changes' }}
+    </button>
+    
+    <div class="btn-group" role="group">
+      <button type="button" 
+              class="btn btn-warning btn-sm save-and-next-btn" 
+              (click)="onSaveAndNext('REVISIT')" 
+              [disabled]="!hasNext || saving"
+              (mouseenter)="onHoverEnter('Set completion state to revisit, save changes and navigate to next result')"
+              (mouseleave)="onHoverLeave()">
+        {{ saving ? 'Saving...' : 'Revisit & Next' }}
+      </button>
+      <button type="button" 
+              class="btn btn-success btn-sm save-and-next-btn" 
+              (click)="onSaveAndNext('DONE')" 
+              [disabled]="!hasNext || saving"
+              (mouseenter)="onHoverEnter('Set completion state to done, save changes and navigate to next result')"
+              (mouseleave)="onHoverLeave()">
+        {{ saving ? 'Saving...' : 'Done & Next' }}
+      </button>
+      <button type="button" 
+              class="btn btn-danger btn-sm save-and-next-btn" 
+              (click)="onSaveAndNext('NOT_USABLE')" 
+              [disabled]="!hasNext || saving"
+              (mouseenter)="onHoverEnter('Set completion state to not usable, save changes and navigate to next result')"
+              (mouseleave)="onHoverLeave()">
+        {{ saving ? 'Saving...' : 'Not Usable & Next' }}
+      </button>
+    </div>
+  </div>
+  
+  <!-- Hover hint area -->
+  <div class="hover-hint-area text-center">
+    <small class="text-muted">{{ localHoverHint || '&nbsp;' }}</small>
+  </div>
+</div>

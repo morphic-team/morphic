@@ -11,5 +11,11 @@
   ],
   "include": [
     "src/**/*.d.ts"
+  ],
+  "exclude": [
+    "MAIN_CHANGELOG.md",
+    "SERVICE_CHANGELOG.md",
+    "EXTENSION_CHANGELOG.md", 
+    "USER_CHANGELOG.md"
   ]
 }

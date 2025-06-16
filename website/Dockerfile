@@ -3,12 +3,6 @@ FROM node:22.16.0-alpine AS builder
 
 WORKDIR /app
 
-# Copy changelog files from changelogs context
-COPY --from=changelogs CHANGELOG.md ./MAIN_CHANGELOG.md
-COPY --from=changelogs service/CHANGELOG.md ./SERVICE_CHANGELOG.md
-COPY --from=changelogs browser-extension/CHANGELOG.md ./EXTENSION_CHANGELOG.md
-COPY --from=changelogs USER_CHANGELOG.md ./USER_CHANGELOG.md
-
 # Copy package files
 COPY package*.json ./
 
@@ -22,6 +16,12 @@ RUN npm install -g @angular/cli
 
 # Copy source code
 COPY . .
+
+# Copy changelog files from changelogs context (after source to avoid overwriting)
+COPY --from=changelogs CHANGELOG.md ./MAIN_CHANGELOG.md
+COPY --from=changelogs service/CHANGELOG.md ./SERVICE_CHANGELOG.md
+COPY --from=changelogs browser-extension/CHANGELOG.md ./EXTENSION_CHANGELOG.md
+COPY --from=changelogs USER_CHANGELOG.md ./USER_CHANGELOG.md
 
 # Build Angular app for production
 RUN npm run build -- --configuration=production

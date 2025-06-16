@@ -9,14 +9,15 @@ const path = require('path');
  */
 
 // Paths relative to the current working directory (website folder when run via npm)
+// Support both local dev (relative paths) and Docker (copied files)
 const CHANGELOG_PATHS = {
-  'morphic': './MAIN_CHANGELOG.md',
-  'service': './SERVICE_CHANGELOG.md', 
+  'morphic': fs.existsSync('./MAIN_CHANGELOG.md') ? './MAIN_CHANGELOG.md' : '../CHANGELOG.md',
+  'service': fs.existsSync('./SERVICE_CHANGELOG.md') ? './SERVICE_CHANGELOG.md' : '../service/CHANGELOG.md',
   'website': './CHANGELOG.md',
-  'extension': './EXTENSION_CHANGELOG.md'
+  'extension': fs.existsSync('./EXTENSION_CHANGELOG.md') ? './EXTENSION_CHANGELOG.md' : '../browser-extension/CHANGELOG.md'
 };
 
-const USER_CHANGELOG_PATH = './USER_CHANGELOG.md';
+const USER_CHANGELOG_PATH = fs.existsSync('./USER_CHANGELOG.md') ? './USER_CHANGELOG.md' : '../USER_CHANGELOG.md';
 
 const OUTPUT_DIR = './public/changelogs';
 
@@ -33,20 +34,20 @@ function parseChangelogMarkdown(content, component, sourceFilePath = null) {
   let currentSection = null;
   let inHeader = true;
   let linkAdded = false;
-  
+
   for (let i = 0; i < lines.length; i++) {
     const originalLine = lines[i];
     const line = originalLine.trim();
-    
+
     // Skip empty lines
     if (!line) continue;
-    
+
     // Main title (# Changelog)
     if (line.startsWith('# ') && inHeader) {
       changelog.title = line.substring(2).trim();
       continue;
     }
-    
+
     // Description paragraphs before first version
     if (inHeader && !line.startsWith('##') && !line.startsWith('# ')) {
       if (changelog.description) {
@@ -56,11 +57,11 @@ function parseChangelogMarkdown(content, component, sourceFilePath = null) {
       }
       continue;
     }
-    
+
     // Version header (## [1.0.1] - 2025-06-15)
     if (line.startsWith('## ')) {
       inHeader = false;
-      
+
       // Replace "this file" with link to source file if provided (only once)
       if (sourceFilePath && changelog.description && !linkAdded) {
         // Convert absolute path to GitHub-style relative path
@@ -71,12 +72,12 @@ function parseChangelogMarkdown(content, component, sourceFilePath = null) {
         changelog.description = changelog.description.replace(/this file/g, `[this file](${fileLink})`);
         linkAdded = true;
       }
-      
+
       // Save previous version if exists
       if (currentVersion) {
         changelog.versions.push(currentVersion);
       }
-      
+
       // Parse version header
       const versionMatch = line.match(/^## \[([^\]]+)\]\s*-\s*(.+)$/);
       if (versionMatch) {
@@ -89,7 +90,7 @@ function parseChangelogMarkdown(content, component, sourceFilePath = null) {
       }
       continue;
     }
-    
+
     // Section header (### Added, ### Changed, etc.)
     if (line.startsWith('### ') && currentVersion) {
       const sectionName = line.substring(4).trim();
@@ -97,19 +98,19 @@ function parseChangelogMarkdown(content, component, sourceFilePath = null) {
       currentVersion.sections[sectionName] = [];
       continue;
     }
-    
+
     // Content lines
     if (currentVersion && currentSection && (line.startsWith('- ') || originalLine.startsWith('  -'))) {
       // Handle multi-line bullets and sub-bullets
       let content = originalLine.startsWith('  -') ? originalLine.substring(4) : line.substring(2);
-      
+
       // Look ahead for continuation lines
       let j = i + 1;
       while (j < lines.length) {
         const nextLine = lines[j];
-        if (nextLine.trim() === '' || 
-            nextLine.startsWith('- ') || 
-            nextLine.startsWith('##') || 
+        if (nextLine.trim() === '' ||
+            nextLine.startsWith('- ') ||
+            nextLine.startsWith('##') ||
             nextLine.startsWith('###')) {
           break;
         }
@@ -121,67 +122,67 @@ function parseChangelogMarkdown(content, component, sourceFilePath = null) {
         }
         j++;
       }
-      
+
       currentVersion.sections[currentSection].push({
         text: content.trim(),
         isSubItem: originalLine.startsWith('  -')
       });
     }
   }
-  
+
   // Don't forget the last version
   if (currentVersion) {
     changelog.versions.push(currentVersion);
   }
-  
+
   return changelog;
 }
 
 function processChangelogs() {
   console.log('Processing changelog files...');
-  
+
   // Ensure output directory exists
   if (!fs.existsSync(OUTPUT_DIR)) {
     fs.mkdirSync(OUTPUT_DIR, { recursive: true });
   }
-  
+
   const processedChangelogs = {};
-  
+
   for (const [component, relativePath] of Object.entries(CHANGELOG_PATHS)) {
     const fullPath = path.resolve(process.cwd(), relativePath);
-    
+
     try {
       if (!fs.existsSync(fullPath)) {
         console.warn(`Warning: Changelog not found for ${component} at ${fullPath}`);
         continue;
       }
-      
+
       const content = fs.readFileSync(fullPath, 'utf8');
       const parsed = parseChangelogMarkdown(content, component, fullPath);
-      
+
       processedChangelogs[component] = parsed;
-      
+
       // Also save individual files for component-specific access
       const outputPath = path.join(OUTPUT_DIR, `${component}.json`);
       fs.writeFileSync(outputPath, JSON.stringify(parsed, null, 2));
-      
+
       console.log(`✓ Processed ${component} changelog (${parsed.versions.length} versions)`);
-      
+
     } catch (error) {
       console.error(`Error processing ${component} changelog:`, error.message);
     }
   }
-  
+
   // Process user-facing changelog
   try {
     const userChangelogPath = path.resolve(process.cwd(), USER_CHANGELOG_PATH);
     if (fs.existsSync(userChangelogPath)) {
       const userContent = fs.readFileSync(userChangelogPath, 'utf8');
       const userParsed = parseChangelogMarkdown(userContent, 'user');
-      
+
       // Add user changelog to combined data
       processedChangelogs['user'] = userParsed;
-      
+
       console.log(`✓ Processed user-facing changelog (${userParsed.versions.length} versions)`);
     } else {
       console.warn(`Warning: User changelog not found at ${userChangelogPath}`);
@@ -189,11 +190,11 @@ function processChangelogs() {
   } catch (error) {
     console.error(`Error processing user changelog:`, error.message);
   }
-  
+
   // Save combined changelog
   const combinedPath = path.join(OUTPUT_DIR, 'all.json');
   fs.writeFileSync(combinedPath, JSON.stringify(processedChangelogs, null, 2));
-  
+
   console.log(`✓ Generated combined changelog with ${Object.keys(processedChangelogs).length} components`);
   console.log(`Files saved to: ${OUTPUT_DIR}`);
 }

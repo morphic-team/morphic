@@ -3,6 +3,12 @@ FROM node:22.16.0-alpine AS builder
 
 WORKDIR /app
 
+# Copy changelog files from changelogs context
+COPY --from=changelogs CHANGELOG.md ./MAIN_CHANGELOG.md
+COPY --from=changelogs service/CHANGELOG.md ./SERVICE_CHANGELOG.md
+COPY --from=changelogs browser-extension/CHANGELOG.md ./EXTENSION_CHANGELOG.md
+COPY --from=changelogs USER_CHANGELOG.md ./USER_CHANGELOG.md
+
 # Copy package files
 COPY package*.json ./
 

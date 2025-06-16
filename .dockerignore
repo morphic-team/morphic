@@ -1,0 +1,8 @@
+# Block everything by default for changelog build context
+*
+
+# Allow only changelog files
+!CHANGELOG.md
+!USER_CHANGELOG.md
+!service/CHANGELOG.md
+!browser-extension/CHANGELOG.md

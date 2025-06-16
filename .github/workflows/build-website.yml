@@ -55,6 +55,8 @@ jobs:
       uses: docker/build-push-action@v5
       with:
         context: ./website
+        build-contexts: |
+          changelogs=.
         platforms: linux/amd64
         push: ${{ github.event_name != 'pull_request' }}
         tags: ${{ env.IMAGE_PREFIX }}/morphic-website:latest

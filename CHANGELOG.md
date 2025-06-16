@@ -5,6 +5,15 @@ All notable changes to the Morphic project infrastructure, deployment, and archi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2025-06-16
+
+### Added
+- **Website Changelog Viewer**: Added changelog viewing feature to the website
+  - Build-time processing of all component changelog markdown files to JSON
+  - Public-facing changelog page accessible via navbar
+  - Displays main project changelog with proper markdown rendering (links, bold text, code)
+  - Integrated into Angular navigation between Instructions and Privacy
+
 ## [1.0.1] - 2025-06-15
 
 ### Added

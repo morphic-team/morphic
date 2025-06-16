@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { InstructionsComponent } from './instructions/instructions.component';
 import { PrivacyComponent } from './privacy/privacy.component';
+import { ChangelogComponent } from './changelog/changelog.component';
 import { SignInComponent } from './sign-in/sign-in.component';
 import { SignUpComponent } from './sign-up/sign-up.component';
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
@@ -17,6 +18,7 @@ import { CreateSearchComponent } from './survey/create-search/create-search.comp
 
 export const routes: Routes = [
   { path: 'instructions', component: InstructionsComponent },
+  { path: 'changelog', component: ChangelogComponent },
   { path: 'privacy', component: PrivacyComponent },
   { path: 'sign-in', component: SignInComponent },
   { path: 'sign-up', component: SignUpComponent },

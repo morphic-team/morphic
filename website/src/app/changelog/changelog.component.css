@@ -1,0 +1,10 @@
+/* Ensure consistent spacing for sub-items */
+li.ms-3 {
+  list-style-type: circle;
+}
+
+/* Improve readability of version badges */
+.badge {
+  font-size: 0.9rem;
+  font-weight: normal;
+}

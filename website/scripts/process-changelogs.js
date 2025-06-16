@@ -32,7 +32,8 @@ function parseChangelogMarkdown(content, component) {
   let inHeader = true;
   
   for (let i = 0; i < lines.length; i++) {
-    const line = lines[i].trim();
+    const originalLine = lines[i];
+    const line = originalLine.trim();
     
     // Skip empty lines
     if (!line) continue;
@@ -84,9 +85,9 @@ function parseChangelogMarkdown(content, component) {
     }
     
     // Content lines
-    if (currentVersion && currentSection && (line.startsWith('- ') || line.startsWith('  -'))) {
+    if (currentVersion && currentSection && (line.startsWith('- ') || originalLine.startsWith('  -'))) {
       // Handle multi-line bullets and sub-bullets
-      let content = line.startsWith('- ') ? line.substring(2) : line.substring(4);
+      let content = originalLine.startsWith('  -') ? originalLine.substring(4) : line.substring(2);
       
       // Look ahead for continuation lines
       let j = i + 1;
@@ -109,7 +110,7 @@ function parseChangelogMarkdown(content, component) {
       
       currentVersion.sections[currentSection].push({
         text: content.trim(),
-        isSubItem: line.startsWith('  -')
+        isSubItem: originalLine.startsWith('  -')
       });
     }
   }

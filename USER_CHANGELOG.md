@@ -2,14 +2,14 @@
 
 Updates and improvements to make your research easier and more efficient.
 
-## Version 1.1.0 - June 16, 2025
+## [1.1.0] - 2025-06-16
 
 ### New Features
 - **Changelog Page**: You can now view all updates and improvements directly on the website
   - Check out the "Changelog" link in the navigation menu to see what's new
   - See both user-friendly summaries and detailed technical changes
 
-## Version 1.0.1 - June 15, 2025
+## [1.0.1] - 2025-06-15
 
 ### New Features
 - **Better Infrastructure**: Behind-the-scenes improvements for faster, more reliable service
@@ -23,7 +23,7 @@ Updates and improvements to make your research easier and more efficient.
 ### Bug Fixes
 - **Chrome Extension**: Fixed authentication issues that could prevent search results from uploading properly
 
-## Version 1.0.0 - January 15, 2025
+## [1.0.0] - 2025-01-15
 
 ### Initial Release
 - **Complete Survey System**: Create, edit, and manage research surveys with multiple question types

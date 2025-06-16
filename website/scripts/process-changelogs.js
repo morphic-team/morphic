@@ -10,13 +10,13 @@ const path = require('path');
 
 // Paths relative to the current working directory (website folder when run via npm)
 const CHANGELOG_PATHS = {
-  'morphic': '../CHANGELOG.md',
-  'service': '../service/CHANGELOG.md', 
+  'morphic': './MAIN_CHANGELOG.md',
+  'service': './SERVICE_CHANGELOG.md', 
   'website': './CHANGELOG.md',
-  'extension': '../browser-extension/CHANGELOG.md'
+  'extension': './EXTENSION_CHANGELOG.md'
 };
 
-const USER_CHANGELOG_PATH = '../USER_CHANGELOG.md';
+const USER_CHANGELOG_PATH = './USER_CHANGELOG.md';
 
 const OUTPUT_DIR = './public/changelogs';
 

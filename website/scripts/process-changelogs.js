@@ -9,15 +9,15 @@ const path = require('path');
  */
 
 // Paths relative to the current working directory (website folder when run via npm)
-// Support both local dev (relative paths) and Docker (copied files)
+// Environment variables allow explicit configuration for different build contexts
 const CHANGELOG_PATHS = {
-  'morphic': fs.existsSync('./MAIN_CHANGELOG.md') ? './MAIN_CHANGELOG.md' : '../CHANGELOG.md',
-  'service': fs.existsSync('./SERVICE_CHANGELOG.md') ? './SERVICE_CHANGELOG.md' : '../service/CHANGELOG.md',
+  'morphic': process.env.MAIN_CHANGELOG_PATH || '../CHANGELOG.md',
+  'service': process.env.SERVICE_CHANGELOG_PATH || '../service/CHANGELOG.md',
   'website': './CHANGELOG.md',
-  'extension': fs.existsSync('./EXTENSION_CHANGELOG.md') ? './EXTENSION_CHANGELOG.md' : '../browser-extension/CHANGELOG.md'
+  'extension': process.env.EXTENSION_CHANGELOG_PATH || '../browser-extension/CHANGELOG.md'
 };
 
-const USER_CHANGELOG_PATH = fs.existsSync('./USER_CHANGELOG.md') ? './USER_CHANGELOG.md' : '../USER_CHANGELOG.md';
+const USER_CHANGELOG_PATH = process.env.USER_CHANGELOG_PATH || '../USER_CHANGELOG.md';
 
 const OUTPUT_DIR = './public/changelogs';
 

@@ -23,6 +23,12 @@ COPY --from=changelogs service/CHANGELOG.md ./SERVICE_CHANGELOG.md
 COPY --from=changelogs browser-extension/CHANGELOG.md ./EXTENSION_CHANGELOG.md
 COPY --from=changelogs USER_CHANGELOG.md ./USER_CHANGELOG.md
 
+# Set explicit changelog paths for build script
+ENV MAIN_CHANGELOG_PATH=./MAIN_CHANGELOG.md
+ENV SERVICE_CHANGELOG_PATH=./SERVICE_CHANGELOG.md  
+ENV EXTENSION_CHANGELOG_PATH=./EXTENSION_CHANGELOG.md
+ENV USER_CHANGELOG_PATH=./USER_CHANGELOG.md
+
 # Build Angular app for production
 RUN npm run build -- --configuration=production
 

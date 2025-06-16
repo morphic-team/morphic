@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 interface ChangelogEntry {
   text: string;
@@ -22,7 +23,7 @@ interface Changelog {
 
 @Component({
   selector: 'app-changelog',
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './changelog.component.html',
   styleUrl: './changelog.component.css'
 })
@@ -30,6 +31,15 @@ export class ChangelogComponent implements OnInit {
   changelog: Changelog | null = null;
   loading = true;
   error: string | null = null;
+  showTechnicalDetails = false;
+  selectedComponent = 'morphic';
+  
+  components = [
+    { id: 'morphic', name: 'Main Project', description: 'Infrastructure & Deployment' },
+    { id: 'service', name: 'Morphic Service', description: 'Morphic Cloud System' },
+    { id: 'website', name: 'Website', description: 'Morphic Website' },
+    { id: 'extension', name: 'Browser Extension', description: 'Morphic Browser Extension' }
+  ];
   
   constructor(private http: HttpClient) {}
   
@@ -38,7 +48,10 @@ export class ChangelogComponent implements OnInit {
   }
   
   loadChangelog(): void {
-    this.http.get<Changelog>('/changelogs/morphic.json')
+    const changelogFile = this.showTechnicalDetails ? `${this.selectedComponent}.json` : 'user.json';
+    this.loading = true;
+    
+    this.http.get<Changelog>(`/changelogs/${changelogFile}`)
       .subscribe({
         next: (data) => {
           this.changelog = data;
@@ -50,6 +63,23 @@ export class ChangelogComponent implements OnInit {
           console.error('Error loading changelog:', err);
         }
       });
+  }
+  
+  toggleView(): void {
+    if (this.showTechnicalDetails) {
+      this.selectedComponent = 'morphic'; // Default to main project in technical mode
+    }
+    this.loadChangelog();
+  }
+  
+  selectComponent(componentId: string): void {
+    this.selectedComponent = componentId;
+    this.loadChangelog();
+  }
+  
+  getSelectedComponentName(): string {
+    const component = this.components.find(c => c.id === this.selectedComponent);
+    return component?.name || 'Technical';
   }
   
   getSectionKeys(sections: { [key: string]: ChangelogEntry[] }): string[] {

@@ -16,9 +16,11 @@ const CHANGELOG_PATHS = {
   'extension': '../browser-extension/CHANGELOG.md'
 };
 
+const USER_CHANGELOG_PATH = '../USER_CHANGELOG.md';
+
 const OUTPUT_DIR = './public/changelogs';
 
-function parseChangelogMarkdown(content, component) {
+function parseChangelogMarkdown(content, component, sourceFilePath = null) {
   const lines = content.split('\n');
   const changelog = {
     component,
@@ -30,6 +32,7 @@ function parseChangelogMarkdown(content, component) {
   let currentVersion = null;
   let currentSection = null;
   let inHeader = true;
+  let linkAdded = false;
   
   for (let i = 0; i < lines.length; i++) {
     const originalLine = lines[i];
@@ -57,6 +60,17 @@ function parseChangelogMarkdown(content, component) {
     // Version header (## [1.0.1] - 2025-06-15)
     if (line.startsWith('## ')) {
       inHeader = false;
+      
+      // Replace "this file" with link to source file if provided (only once)
+      if (sourceFilePath && changelog.description && !linkAdded) {
+        // Convert absolute path to GitHub-style relative path
+        const githubPath = sourceFilePath.replace(/^.*\/morphic\//, '');
+        const repoUrl = 'https://github.com/morphic-team/morphic/blob/main';
+        const fileLink = `${repoUrl}/${githubPath}`;
+        // Replace "this file" with a link to the actual file
+        changelog.description = changelog.description.replace(/this file/g, `[this file](${fileLink})`);
+        linkAdded = true;
+      }
       
       // Save previous version if exists
       if (currentVersion) {
@@ -143,7 +157,7 @@ function processChangelogs() {
       }
       
       const content = fs.readFileSync(fullPath, 'utf8');
-      const parsed = parseChangelogMarkdown(content, component);
+      const parsed = parseChangelogMarkdown(content, component, fullPath);
       
       processedChangelogs[component] = parsed;
       
@@ -156,6 +170,25 @@ function processChangelogs() {
     } catch (error) {
       console.error(`Error processing ${component} changelog:`, error.message);
     }
+  }
+  
+  // Process user-facing changelog
+  try {
+    const userChangelogPath = path.resolve(process.cwd(), USER_CHANGELOG_PATH);
+    if (fs.existsSync(userChangelogPath)) {
+      const userContent = fs.readFileSync(userChangelogPath, 'utf8');
+      const userParsed = parseChangelogMarkdown(userContent, 'user');
+      
+      // Save user changelog separately
+      const userOutputPath = path.join(OUTPUT_DIR, 'user.json');
+      fs.writeFileSync(userOutputPath, JSON.stringify(userParsed, null, 2));
+      
+      console.log(`✓ Processed user-facing changelog (${userParsed.versions.length} versions)`);
+    } else {
+      console.warn(`Warning: User changelog not found at ${userChangelogPath}`);
+    }
+  } catch (error) {
+    console.error(`Error processing user changelog:`, error.message);
   }
   
   // Save combined changelog

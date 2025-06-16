@@ -179,9 +179,8 @@ function processChangelogs() {
       const userContent = fs.readFileSync(userChangelogPath, 'utf8');
       const userParsed = parseChangelogMarkdown(userContent, 'user');
       
-      // Save user changelog separately
-      const userOutputPath = path.join(OUTPUT_DIR, 'user.json');
-      fs.writeFileSync(userOutputPath, JSON.stringify(userParsed, null, 2));
+      // Add user changelog to combined data
+      processedChangelogs['user'] = userParsed;
       
       console.log(`✓ Processed user-facing changelog (${userParsed.versions.length} versions)`);
     } else {

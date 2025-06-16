@@ -48,13 +48,13 @@ export class ChangelogComponent implements OnInit {
   }
   
   loadChangelog(): void {
-    const changelogFile = this.showTechnicalDetails ? `${this.selectedComponent}.json` : 'user.json';
     this.loading = true;
     
-    this.http.get<Changelog>(`/changelogs/${changelogFile}`)
+    this.http.get<{[key: string]: Changelog}>('/changelogs/all.json')
       .subscribe({
         next: (data) => {
-          this.changelog = data;
+          const componentKey = this.showTechnicalDetails ? this.selectedComponent : 'user';
+          this.changelog = data[componentKey];
           this.loading = false;
         },
         error: (err) => {

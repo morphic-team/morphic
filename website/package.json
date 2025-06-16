@@ -1,12 +1,21 @@
 {
   "name": "morphic-website",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "scripts": {
-    "ng": "ng",
     "start": "ng serve --host 0.0.0.0",
-    "build": "ng build",
-    "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    
+    "dev:serve": "ng serve --host 0.0.0.0",
+    "dev:watch": "ng build --watch --configuration development",
+    
+    "build": "npm run build:assets && ng build",
+    "build:dev": "npm run build:assets && ng build --configuration development",
+    "build:prod": "npm run build:assets && ng build --configuration production",
+    "build:assets": "node scripts/process-changelogs.js",
+    
+    "test": "ng test",
+    "test:watch": "ng test --watch",
+    
+    "clean": "rm -rf dist/ public/changelogs/"
   },
   "private": true,
   "dependencies": {

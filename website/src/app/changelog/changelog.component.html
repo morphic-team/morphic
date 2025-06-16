@@ -1,0 +1,53 @@
+<div class="py-4">
+  <div class="card">
+    <div class="card-header">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb mb-0">
+          <li class="breadcrumb-item active" aria-current="page">Changelog</li>
+        </ol>
+      </nav>
+    </div>
+    <div class="card-body">
+      <h1 class="mb-4">Morphic Changelog</h1>
+      
+      <!-- Loading State -->
+      <div *ngIf="loading" class="text-center py-5">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>
+      
+      <!-- Error State -->
+      <div *ngIf="error && !loading" class="alert alert-danger" role="alert">
+        {{ error }}
+      </div>
+      
+      <!-- Changelog Content -->
+      <div *ngIf="!loading && !error && changelog">
+        <!-- Changelog Description -->
+        <div *ngIf="changelog.description" class="text-muted mb-4">
+          <p [innerHTML]="formatChangelogText(changelog.description)"></p>
+        </div>
+        
+        <!-- Versions -->
+        <div *ngFor="let version of changelog.versions" class="mb-5">
+          <h2 class="h4">
+            <span class="badge bg-secondary me-2">{{ version.version }}</span>
+            <small class="text-muted">{{ version.date }}</small>
+          </h2>
+          
+          <!-- Sections -->
+          <div *ngFor="let section of getSectionKeys(version.sections)" class="mt-3">
+            <h3 class="h5 fw-bold text-success">{{ section }}</h3>
+            <ul class="mb-3">
+              <li *ngFor="let entry of version.sections[section]" 
+                  [class.ms-3]="entry.isSubItem">
+                <span [innerHTML]="formatChangelogText(entry.text)"></span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -27,3 +27,6 @@ secrets/*.env
 
 # Claude Code local settings
 .claude/settings.local.json
+
+# Generated build assets
+website/public/changelogs/

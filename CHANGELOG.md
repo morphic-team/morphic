@@ -1,9 +1,18 @@
 # Changelog
 
-All notable changes to the Morphic project infrastructure, deployment, and architecture will be documented in this file.
+All notable changes to the Morphic project: application, infrastructure, deployment, and architecture will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [1.2.0] - 2025-06-17
+
+### Added
+- **Date Picker Field Type**: New survey field type for collecting date information
+  - Native browser date picker interface for better user experience
+  - Consistent ISO 8601 date format (YYYY-MM-DD) for data storage
+  - Full integration across survey builder, preview, and response collection
+  - Seamless CSV export with properly formatted dates
 
 ## [1.1.0] - 2025-06-16
 

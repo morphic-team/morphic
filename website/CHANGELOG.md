@@ -5,6 +5,15 @@ All notable changes to the Morphic Website will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2025-06-17
+
+### Added
+- **Date Field Type**: New form field type for date selection in surveys
+  - Native HTML date picker integration  
+  - ISO 8601 date format storage (YYYY-MM-DD)
+  - Full support in survey builder, preview, and response forms
+  - Seamless export functionality with proper date formatting
+
 ## [1.0.1] - 2025-06-15
 
 ### Added

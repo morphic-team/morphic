@@ -9,13 +9,13 @@ export interface Survey {
 export interface SurveyField {
   id: string;
   label: string;
-  fieldType: 'text' | 'select' | 'radio' | 'location';
+  fieldType: 'text' | 'select' | 'radio' | 'location' | 'date';
   options?: string | string[]; // comma-separated string during creation, array when loaded from backend
   order: number;
 }
 
 export interface FieldType {
-  id: 'text' | 'select' | 'radio' | 'location';
+  id: 'text' | 'select' | 'radio' | 'location' | 'date';
   label: string;
 }
 
@@ -23,5 +23,6 @@ export const FIELD_TYPES: FieldType[] = [
   { id: 'text', label: 'Text' },
   { id: 'select', label: 'Select' },
   { id: 'radio', label: 'Radio' },
-  { id: 'location', label: 'Location' }
+  { id: 'location', label: 'Location' },
+  { id: 'date', label: 'Date' }
 ];

@@ -2,6 +2,14 @@
 
 Updates and improvements to make your research easier and more efficient.
 
+## [1.2.0] - 2025-06-17
+
+### New Features
+- **Date Picker Fields**: You can now add date fields to your surveys
+  - Select dates using an easy calendar interface
+  - Perfect for time-based research and event tracking
+  - Dates are automatically formatted for consistent data analysis
+
 ## [1.1.0] - 2025-06-16
 
 ### New Features

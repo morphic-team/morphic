@@ -45,6 +45,13 @@
         <small class="form-text text-muted">Click on the map to select a location</small>
       </div>
 
+      <!-- Date Field -->
+      <app-morphic-date *ngIf="field.fieldType === 'date'" 
+                        [inputId]="field.id"
+                        [(ngModel)]="previewValues[field.id]"
+                        [name]="field.id">
+      </app-morphic-date>
+
     </div>
 
     <div class="mt-4 p-3 bg-light border rounded">

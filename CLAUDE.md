@@ -245,7 +245,7 @@ All form fields use custom Morphic wrapper components (`morphic-text`, `morphic-
 
 ### Survey System Architecture
 - **Survey Creation**: Multi-step survey builder with field validation
-- **Field Types**: Support for text, select (dropdown), radio buttons, and location
+- **Field Types**: Support for text, select (dropdown), radio buttons, location, and date
 - **Location Picker**: Leaflet-based maps with Nominatim geocoding
   - Click-to-place markers
   - Drag-to-move functionality  

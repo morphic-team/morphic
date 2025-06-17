@@ -7,10 +7,11 @@ import { LocationData } from '../models/location.model';
 import { MorphicTextComponent } from '../form-fields/morphic-text.component';
 import { MorphicSelectComponent } from '../form-fields/morphic-select.component';
 import { MorphicRadioComponent } from '../form-fields/morphic-radio.component';
+import { MorphicDateComponent } from '../morphic-date/morphic-date.component';
 
 @Component({
   selector: 'app-survey-form',
-  imports: [CommonModule, FormsModule, LocationPickerComponent, MorphicTextComponent, MorphicSelectComponent, MorphicRadioComponent],
+  imports: [CommonModule, FormsModule, LocationPickerComponent, MorphicTextComponent, MorphicSelectComponent, MorphicRadioComponent, MorphicDateComponent],
   templateUrl: './survey-form.component.html',
   styleUrls: ['./survey-form.component.css']
 })

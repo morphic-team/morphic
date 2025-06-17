@@ -57,6 +57,16 @@
         </app-location-picker>
       </div>
 
+      <!-- Date Field -->
+      <app-morphic-date *ngIf="field.fieldType === 'date'" 
+                        [ngClass]="{'changed-field': isFieldChanged(field)}"
+                        [inputId]="'field_' + i"
+                        [(ngModel)]="formValues[getFieldKey(field)]"
+                        [name]="'field_' + i"
+                        [disabled]="disabled"
+                        (ngModelChange)="onFieldValueChange(field, $event)">
+      </app-morphic-date>
+
     </div>
 
     <div *ngIf="showSubmitButton && !disabled" class="mt-4">

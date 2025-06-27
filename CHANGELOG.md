@@ -5,6 +5,15 @@ All notable changes to the Morphic project: application, infrastructure, deploym
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2025-06-27
+
+### Added
+- **Research Projects Page**: New website feature showcasing published research using Morphic
+  - Comprehensive listing of 17 published papers with DOI links
+  - Research categories: color polymorphism, evolutionary ecology, conservation
+  - Community engagement section for researchers to share their work
+  - Demonstrates Morphic's impact across diverse taxa and research questions
+
 ## [1.2.0] - 2025-06-17
 
 ### Added

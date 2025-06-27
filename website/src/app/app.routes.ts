@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { InstructionsComponent } from './instructions/instructions.component';
 import { PrivacyComponent } from './privacy/privacy.component';
 import { ChangelogComponent } from './changelog/changelog.component';
+import { ProjectsComponent } from './projects/projects.component';
 import { SignInComponent } from './sign-in/sign-in.component';
 import { SignUpComponent } from './sign-up/sign-up.component';
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
@@ -20,6 +21,7 @@ export const routes: Routes = [
   { path: 'instructions', component: InstructionsComponent },
   { path: 'changelog', component: ChangelogComponent },
   { path: 'privacy', component: PrivacyComponent },
+  { path: 'projects', component: ProjectsComponent },
   { path: 'sign-in', component: SignInComponent },
   { path: 'sign-up', component: SignUpComponent },
   { path: 'forgot-password', component: ForgotPasswordComponent },

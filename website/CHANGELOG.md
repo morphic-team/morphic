@@ -5,6 +5,16 @@ All notable changes to the Morphic Website will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2025-06-27
+
+### Added
+- **Projects Page**: New dedicated page showcasing research projects using Morphic
+  - Overview of how researchers leverage Morphic for trait variation studies
+  - Comprehensive table of 17 published research papers with direct DOI links
+  - Categorized research areas: color polymorphism, evolutionary ecology, conservation
+  - Call-to-action for researchers to share their Morphic-powered projects
+  - Added navigation item in main menu between Privacy and authentication options
+
 ## [1.2.0] - 2025-06-17
 
 ### Added

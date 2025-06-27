@@ -2,6 +2,15 @@
 
 Updates and improvements to make your research easier and more efficient.
 
+## [1.3.0] - 2025-06-27
+
+### New Features
+- **Research Projects Page**: Discover how other researchers are using Morphic
+  - Browse 17+ published research papers that used Morphic for data collection
+  - Learn about diverse applications from color polymorphism to conservation studies
+  - Find inspiration for your own research projects
+  - Connect with the Morphic research community
+
 ## [1.2.0] - 2025-06-17
 
 ### New Features

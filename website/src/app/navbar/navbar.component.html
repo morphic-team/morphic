@@ -28,7 +28,7 @@
     </ul>
 
     <!-- Authentication actions on the right when not signed in -->
-    <div class="navbar-nav ms-auto" *ngIf="!(user$ | async)">
+    <div class="navbar-nav ms-auto" *ngIf="(user$ | async) === null">
       <a routerLink="/sign-up" class="btn btn-outline-primary me-2">Sign Up</a>
       <a routerLink="/sign-in" class="btn btn-primary">Sign In</a>
     </div>
@@ -41,9 +41,9 @@
         </a>
         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
           <li>
-            <a class="dropdown-item" (click)="signOut()">
+            <button type="button" class="dropdown-item" (click)="signOut()" (keyup.enter)="signOut()">
               <span class="bi bi-box-arrow-right pe-1"></span> Logout
-            </a>
+            </button>
           </li>
         </ul>
       </li>

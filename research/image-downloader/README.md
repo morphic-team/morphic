@@ -6,7 +6,7 @@ This directory contains the scientific analysis of image download success rates 
 
 ```
 research/image-downloader/
-├── scripts/           # Analysis scripts
+├── scripts/          # Analysis scripts
 ├── docs/             # Documentation and research notes
 ├── data/             # Raw and processed data files
 └── results/          # Generated visualizations and reports

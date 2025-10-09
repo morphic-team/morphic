@@ -68,7 +68,6 @@ def export_search_results(output_file, limit=None, include_processed=True):
                 'duplicate_of_id',
                 'survey_name',
                 'search_query',
-                'created_at'
             ]
             
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
@@ -87,7 +86,7 @@ def export_search_results(output_file, limit=None, include_processed=True):
                     'duplicate_of_id': result.duplicate_of_id,
                     'survey_name': result.search.survey.name,
                     'search_query': result.search.query,
-                    'created_at': result.created_at.isoformat() if hasattr(result, 'created_at') and result.created_at else ''
+                    'strategy': 'baseline'
                 })
         
         print(f"Export complete: {output_file}")

@@ -21,13 +21,13 @@ export type ExtensionNotice = 'none' | 'unsupported' | 'updating' | 'update';
   providedIn: 'root'
 })
 export class ExtensionService {
-  readonly SUPPORTED_EXTENSION_VERSIONS = ['1.0.0', '1.0.1'];
-  readonly RECOMMENDED_EXTENSION_VERSION = '1.0.0'; // Latest publicly available on CWS
+  readonly SUPPORTED_EXTENSION_VERSIONS = ['1.1.0'];
+  readonly RECOMMENDED_EXTENSION_VERSION = '1.1.0';
 
   // Store listing per browser. Null while the store does not carry a build in
   // SUPPORTED_EXTENSION_VERSIONS, which puts that browser in the "updating" state.
   readonly STORE_URLS: Record<Exclude<ExtensionBrowser, 'unsupported'>, string | null> = {
-    chrome: 'https://chrome.google.com/webstore/detail/fhigbmfhhlpkjbdamhjmfajhkfbkkgah',
+    chrome: null,
     edge: null,
     firefox: null
   };

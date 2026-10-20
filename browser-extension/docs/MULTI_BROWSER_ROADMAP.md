@@ -22,9 +22,9 @@ Plan for shipping the Morphic extension on Chrome, Firefox, Edge and Safari from
 - [ ] Review the `data_collection_permissions` declaration before AMO submission
 
 ## Edge
-- Loads the Chrome build unchanged
-- [ ] Stop excluding `edg/` user agents in the website's browser detection
-- [ ] Microsoft Edge Add-ons listing
+- [x] Loads the Chrome build unchanged, zipped by `package:edge`
+- [x] Website detects Edge and reads the handshake attribute
+- [ ] Microsoft Edge Add-ons listing, then add its install URL to the website
 
 ## Safari
 - Safari 15.4+ supports `externally_connectable`, but the handshake content script approach avoids the
@@ -33,11 +33,6 @@ Plan for shipping the Morphic extension on Chrome, Firefox, Edge and Safari from
 - [ ] Apple Developer Program membership and macOS build runner
 - [ ] Mac App Store or notarized distribution, with per-site permission grant in Safari settings
 - [ ] Verify Google Images markup and hover simulation in WebKit
-
-## Possible Simplification
-Chrome could adopt the handshake content script too. That would remove the background script and
-`externally_connectable` from the Chrome build and leave a single detection path on the website.
-This must wait for a Chrome extension release so the website keeps working with the installed base.
 
 ## Risk Assessment
 - **Low**: shared scraping code and build system

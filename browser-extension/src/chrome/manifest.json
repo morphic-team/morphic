@@ -1,17 +1,16 @@
 {
   "name": "Morphs.io chrome extension",
   "manifest_version": 3,
-  "background": {
-    "service_worker": "background.js"
-  },
   "content_scripts": [
     {
       "matches": ["https://www.google.com/search*morphic:*"],
       "js": ["content.js"]
+    },
+    {
+      "matches": ["https://morphs.io/*"],
+      "js": ["handshake.js"],
+      "run_at": "document_start"
     }
   ],
-  "externally_connectable": {
-    "matches": ["https://morphs.io/*"]
-  },
   "minimum_chrome_version": "88"
 }

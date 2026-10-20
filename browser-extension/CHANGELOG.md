@@ -5,18 +5,22 @@ All notable changes to the Morphic Chrome Extension will be documented in this f
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.1.0] - 2026-10-20
 
 ### Added
 - **Firefox Support**: Manifest V3 build from `src/firefox/` sharing the scraping code with Chrome
   - Handshake content script that publishes the installed extension version to the website
   - `build:firefox`, `dev:firefox`, `preview:amo` and `package:amo` build scripts, plus web-ext lint and run
 
+- **Edge Support**: `package:edge` and `preview:edge` zip the Chrome build for Microsoft Edge Add-ons
+
 ### Fixed
 - Fixed Google Images result parsing for Google's current page markup
 - Fixed the Close button on the error overlay
 
 ### Changed
+- The website version check now uses the handshake content script in every browser. The Chrome
+  build no longer has a background script or `externally_connectable`
 - Build output moved from `dist/<target>/` to `dist/<browser>/<target>/`
 - Package renamed to `morphic-browser-extension`
 

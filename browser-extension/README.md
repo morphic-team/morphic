@@ -126,6 +126,47 @@ npm run package:cws
 # Output: dist/chrome/release/morphic-chrome-extension-v1.0.0.crx
 ```
 
+## Firefox
+
+The same shared code builds a Firefox (Manifest V3) extension from `src/firefox/`.
+
+### Differences from the Chrome build
+
+- **Version check**: Firefox has no web-page-to-extension messaging (`externally_connectable`),
+  so there is no background script. Instead `handshake.js` runs on morphs.io at `document_start`
+  and sets `data-morphic-extension-version` on the `<html>` element, which the website reads.
+- **Localhost**: Firefox match patterns cannot contain a port, so dev builds match `http://localhost/*`
+  (any port) rather than `http://localhost:*/*`.
+- **Host permission**: Firefox asks the user to grant access to google.com and morphs.io at install
+  time. If declined, the content scripts never run.
+- **Packaging**: a plain zip for addons.mozilla.org (AMO) instead of a signed CRX. There is no key
+  field; the extension ID is fixed in `browser_specific_settings.gecko.id`.
+- **Data collection**: AMO requires `data_collection_permissions` for new submissions. The manifest
+  declares `websiteContent` because the extension sends scraped Google result URLs to morphs.io.
+
+### Firefox Commands
+
+```bash
+npm run build:firefox   # Dev build -> dist/firefox/dev/
+npm run dev:firefox     # Dev build with file watching
+npm run lint:firefox    # Validate the dev build with web-ext lint
+npm run run:firefox     # Launch Firefox with the dev build loaded (requires Firefox installed)
+npm run preview:amo     # Zip + unpacked copy -> dist/firefox/preview/
+npm run package:amo     # Release zip -> dist/firefox/release/
+```
+
+### Testing in Firefox
+
+1. `npm run build:firefox`
+2. Open `about:debugging#/runtime/this-firefox` and click **Load Temporary Add-on**
+3. Select `dist/firefox/dev/manifest.json`
+4. Open (or reload) the Morphic website. The handshake script only runs on pages loaded after the
+   add-on was installed, so reload any tab that was already open.
+5. Run a search from the survey's searches page and watch the overlay on Google Images.
+
+Temporary add-ons are removed when Firefox closes. Release Firefox only installs AMO-signed add-ons,
+so distribution requires either an AMO listing or `web-ext sign` for a self-hosted xpi.
+
 ## Extension Architecture
 
 ### Core Components

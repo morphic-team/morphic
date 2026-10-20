@@ -22,7 +22,7 @@ export class SearchesListComponent implements OnInit {
     isChecking: false,
     isInstalled: false,
     version: '',
-    isChromeBrowser: false
+    browser: 'unsupported'
   };
   isRefreshing = false;
 
@@ -74,7 +74,7 @@ export class SearchesListComponent implements OnInit {
       
       // Update extension status and check if notice should show
       this.storageService.updateExtensionStatus(status.version || null, status.isInstalled);
-      this.showExtensionNotice = this.storageService.shouldShowExtensionNotice(status.version || null, status.isInstalled) && status.isChromeBrowser;
+      this.showExtensionNotice = this.storageService.shouldShowExtensionNotice(status.version || null, status.isInstalled) && status.browser !== 'unsupported';
     });
   }
   
@@ -88,6 +88,14 @@ export class SearchesListComponent implements OnInit {
   
   get REQUIRED_EXTENSION_VERSION(): string {
     return this.extensionService.RECOMMENDED_EXTENSION_VERSION;
+  }
+
+  get browserName(): string {
+    return this.extensionService.browserName(this.extensionStatus.browser);
+  }
+
+  get installUrl(): string | null {
+    return this.extensionService.installUrl(this.extensionStatus.browser);
   }
 
   dismissExtensionNotice(): void {

@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Firefox Support**: Manifest V3 build from `src/firefox/` sharing the scraping code with Chrome
+  - Handshake content script that publishes the installed extension version to the website
+  - `build:firefox`, `dev:firefox`, `preview:amo` and `package:amo` build scripts, plus web-ext lint and run
+
 ### Fixed
 - Fixed Google Images result parsing for Google's current page markup
 - Fixed the Close button on the error overlay

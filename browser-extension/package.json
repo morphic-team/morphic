@@ -1,5 +1,5 @@
 {
-  "description": "Morphs.io Chrome Extension",
+  "description": "Morphs.io browser extension",
   "devDependencies": {
     "@eslint/js": "^9.28.0",
     "@eslint/json": "^0.12.0",
@@ -12,7 +12,7 @@
     "prettier": "^3.5.3",
     "typescript": "^5.8.3"
   },
-  "name": "morphic-chrome-extension",
+  "name": "morphic-browser-extension",
   "private": true,
   "scripts": {
     "build:chrome": "node scripts/build.js --target=dev --browser=chrome",

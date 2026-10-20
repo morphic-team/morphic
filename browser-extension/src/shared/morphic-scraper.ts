@@ -61,7 +61,9 @@ function validateJWT(payload: JWTPayload): void {
 
   // Check audience if present
   if (payload.aud && payload.aud !== EXPECTED_AUDIENCE) {
-    throw new Error(`Invalid token audience: expected '${EXPECTED_AUDIENCE}', got '${payload.aud}'`);
+    throw new Error(
+      `Invalid token audience: expected '${EXPECTED_AUDIENCE}', got '${payload.aud}'`
+    );
   }
 
   // Check issuer if present
@@ -343,10 +345,10 @@ class Scraper {
     // Extract and decode JWT from URL
     const jwt = this.getJWTToken();
     const jwtPayload = decodeJWT(jwt);
-    
+
     // Validate the JWT payload
     validateJWT(jwtPayload);
-    
+
     this.morphicId = jwtPayload.search_id;
     this.resultsToScrape = jwtPayload.limit;
     this.uploadUrl = jwtPayload.upload_url;

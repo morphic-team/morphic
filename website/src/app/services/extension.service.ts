@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 
-export type ExtensionBrowser = 'chrome' | 'firefox' | 'unsupported';
+export type ExtensionBrowser = 'chrome' | 'edge' | 'firefox' | 'unsupported';
 
 export interface ExtensionStatus {
   isChecking: boolean;
@@ -10,32 +10,44 @@ export interface ExtensionStatus {
   browser: ExtensionBrowser;
 }
 
+// What the user is told about the extension:
+// - none: a compatible extension is installed
+// - unsupported: this browser cannot run the extension
+// - updating: the store has no compatible build yet, the user has to wait for us
+// - update: the store has a compatible build, the user has to install or update
+export type ExtensionNotice = 'none' | 'unsupported' | 'updating' | 'update';
+
 @Injectable({
   providedIn: 'root'
 })
 export class ExtensionService {
   readonly SUPPORTED_EXTENSION_VERSIONS = ['1.0.0', '1.0.1'];
   readonly RECOMMENDED_EXTENSION_VERSION = '1.0.0'; // Latest publicly available on CWS
-  readonly PRODUCTION_EXTENSION_ID = 'fhigbmfhhlpkjbdamhjmfajhkfbkkgah';
-  readonly CHROME_INSTALL_URL = 'https://chrome.google.com/webstore/detail/fhigbmfhhlpkjbdamhjmfajhkfbkkgah';
 
-  // The Firefox handshake content script publishes the installed version as a data
-  // attribute on <html>, because Firefox has no web-page-to-extension messaging.
-  readonly FIREFOX_VERSION_ATTRIBUTE = 'morphicExtensionVersion';
+  // Store listing per browser. Null while the store does not carry a build in
+  // SUPPORTED_EXTENSION_VERSIONS, which puts that browser in the "updating" state.
+  readonly STORE_URLS: Record<Exclude<ExtensionBrowser, 'unsupported'>, string | null> = {
+    chrome: 'https://chrome.google.com/webstore/detail/fhigbmfhhlpkjbdamhjmfajhkfbkkgah',
+    edge: null,
+    firefox: null
+  };
 
-  private readonly EXTENSION_CHECK_TIMEOUT_MS = 2000;
+  // The extension's handshake content script runs on this site at document_start and
+  // publishes the installed version as a data attribute on <html>.
+  readonly VERSION_ATTRIBUTE = 'morphicExtensionVersion';
 
   checkExtensionStatus(): Observable<ExtensionStatus> {
     const browser = this.detectBrowser();
-
-    switch (browser) {
-      case 'chrome':
-        return this.checkChromeExtension();
-      case 'firefox':
-        return this.checkFirefoxExtension();
-      case 'unsupported':
-        return this.completedStatus({ isInstalled: false, version: '', browser });
+    if (browser === 'unsupported') {
+      return this.completedStatus({ isInstalled: false, version: '', browser });
     }
+
+    const version = document.documentElement.dataset[this.VERSION_ATTRIBUTE];
+    return this.completedStatus({
+      isInstalled: version !== undefined,
+      version: version || '',
+      browser
+    });
   }
 
   detectBrowser(): ExtensionBrowser {
@@ -43,7 +55,10 @@ export class ExtensionService {
     if (userAgent.includes('firefox/')) {
       return 'firefox';
     }
-    if (userAgent.includes('chrome') && !userAgent.includes('edg/')) {
+    if (userAgent.includes('edg/')) {
+      return 'edge';
+    }
+    if (userAgent.includes('chrome')) {
       return 'chrome';
     }
     return 'unsupported';
@@ -57,6 +72,8 @@ export class ExtensionService {
     switch (browser) {
       case 'chrome':
         return 'Chrome';
+      case 'edge':
+        return 'Edge';
       case 'firefox':
         return 'Firefox';
       case 'unsupported':
@@ -64,9 +81,18 @@ export class ExtensionService {
     }
   }
 
-  // Null when the extension is not yet published for that browser
-  installUrl(browser: ExtensionBrowser): string | null {
-    return browser === 'chrome' ? this.CHROME_INSTALL_URL : null;
+  storeUrl(browser: ExtensionBrowser): string | null {
+    return browser === 'unsupported' ? null : this.STORE_URLS[browser];
+  }
+
+  noticeFor(status: ExtensionStatus): ExtensionNotice {
+    if (status.browser === 'unsupported') {
+      return 'unsupported';
+    }
+    if (this.isExtensionValid(status)) {
+      return 'none';
+    }
+    return this.storeUrl(status.browser) ? 'update' : 'updating';
   }
 
   isVersionValid(version: string): boolean {
@@ -75,82 +101,6 @@ export class ExtensionService {
 
   isExtensionValid(status: ExtensionStatus): boolean {
     return status.browser !== 'unsupported' && status.isInstalled && this.isVersionValid(status.version);
-  }
-
-  private checkFirefoxExtension(): Observable<ExtensionStatus> {
-    const version = document.documentElement.dataset[this.FIREFOX_VERSION_ATTRIBUTE];
-    return this.completedStatus({
-      isInstalled: version !== undefined,
-      version: version || '',
-      browser: 'firefox'
-    });
-  }
-
-  private checkChromeExtension(): Observable<ExtensionStatus> {
-    const subject = new Subject<ExtensionStatus>();
-    const browser: ExtensionBrowser = 'chrome';
-
-    // Start checking
-    subject.next({
-      isChecking: true,
-      isInstalled: false,
-      version: '',
-      browser
-    });
-
-    // Set timeout
-    const timeoutId = setTimeout(() => {
-      subject.next({
-        isChecking: false,
-        isInstalled: false,
-        version: '',
-        browser
-      });
-      subject.complete();
-    }, this.EXTENSION_CHECK_TIMEOUT_MS);
-
-    // Try to communicate with extension
-    if (typeof (window as any).chrome !== 'undefined' && (window as any).chrome.runtime) {
-      (window as any).chrome.runtime.sendMessage(this.PRODUCTION_EXTENSION_ID, { action: 'getVersion' }, (response: any) => {
-        clearTimeout(timeoutId);
-
-        if ((window as any).chrome.runtime.lastError || !response) {
-          // Extension failed to respond - use setTimeout for timing fix
-          setTimeout(() => {
-            subject.next({
-              isChecking: false,
-              isInstalled: false,
-              version: '',
-              browser
-            });
-            subject.complete();
-          }, 0);
-        } else {
-          // Extension responded successfully - emit immediately
-          subject.next({
-            isChecking: false,
-            isInstalled: true,
-            version: response.version || '',
-            browser
-          });
-          subject.complete();
-        }
-      });
-    } else {
-      // No Chrome runtime available - use setTimeout for timing fix
-      clearTimeout(timeoutId);
-      setTimeout(() => {
-        subject.next({
-          isChecking: false,
-          isInstalled: false,
-          version: '',
-          browser
-        });
-        subject.complete();
-      }, 0);
-    }
-
-    return subject.asObservable();
   }
 
   private completedStatus(status: Omit<ExtensionStatus, 'isChecking'>): Observable<ExtensionStatus> {

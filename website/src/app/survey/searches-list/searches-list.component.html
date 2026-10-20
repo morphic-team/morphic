@@ -7,26 +7,19 @@
     </div>
   </div>
 
-  <div *ngIf="!extensionStatus.isChecking && showExtensionNotice && !extensionStatus.isInstalled" class="alert alert-warning alert-dismissible mb-3">
-    <strong>{{ browserName }} Extension Required</strong>
-    <p class="mb-2 mt-2">To gather search results, install the Morphic {{ browserName }} extension.</p>
-    <a *ngIf="installUrl"
-       [href]="installUrl"
-       target="_blank"
-       class="btn btn-sm btn-outline-primary me-2">
-      Install Extension
-    </a>
+  <div *ngIf="!extensionStatus.isChecking && showExtensionNotice && extensionNotice === 'updating'" class="alert alert-warning alert-dismissible mb-3">
+    <strong>Extension Being Updated</strong>
+    <p class="mb-0 mt-2">The Morphic {{ browserName }} extension is being updated. Gathering search results is unavailable until the new version is published.</p>
     <button type="button" class="btn-close" aria-label="Close" (click)="dismissExtensionNotice()"></button>
   </div>
 
-  <div *ngIf="!extensionStatus.isChecking && showExtensionNotice && isExtensionOutdated" class="alert alert-warning alert-dismissible mb-3">
+  <div *ngIf="!extensionStatus.isChecking && showExtensionNotice && extensionNotice === 'update'" class="alert alert-warning alert-dismissible mb-3">
     <strong>Extension Update Required</strong>
-    <p class="mb-2 mt-2">Your Morphic extension (v{{extensionStatus.version}}) is outdated. Please update to v{{REQUIRED_EXTENSION_VERSION}}.</p>
-    <a *ngIf="installUrl"
-       [href]="installUrl"
+    <p class="mb-2 mt-2">To gather search results, install or update the Morphic {{ browserName }} extension to v{{REQUIRED_EXTENSION_VERSION}}.</p>
+    <a [href]="storeUrl"
        target="_blank"
        class="btn btn-sm btn-outline-primary me-2">
-      Update Extension
+      Get Extension
     </a>
     <button type="button" class="btn-close" aria-label="Close" (click)="dismissExtensionNotice()"></button>
   </div>

@@ -15,32 +15,25 @@
         </div>
 
         <!-- Unsupported Browser -->
-        <div *ngIf="!extensionStatus.isChecking && extensionStatus.browser === 'unsupported'" class="alert alert-warning">
+        <div *ngIf="!extensionStatus.isChecking && extensionNotice === 'unsupported'" class="alert alert-warning">
           <strong>Supported Browser Required</strong>
-          <p class="mb-0 mt-2">To gather search results, you need to use Google Chrome or Firefox and install the Morphic extension.</p>
+          <p class="mb-0 mt-2">To gather search results, you need to use Chrome, Edge or Firefox and install the Morphic extension.</p>
         </div>
 
-        <!-- Supported Browser - Missing Extension -->
-        <div *ngIf="!extensionStatus.isChecking && extensionStatus.browser !== 'unsupported' && !extensionStatus.isInstalled" class="alert alert-warning">
-          <strong>{{ browserName }} Extension Required</strong>
-          <p class="mb-2 mt-2">To gather search results, you need to install the Morphic {{ browserName }} extension.</p>
-          <a *ngIf="installUrl"
-             [href]="installUrl"
-             target="_blank"
-             class="btn btn-sm btn-outline-primary">
-            Install Extension
-          </a>
+        <!-- Store has no compatible build yet -->
+        <div *ngIf="!extensionStatus.isChecking && extensionNotice === 'updating'" class="alert alert-warning">
+          <strong>Extension Being Updated</strong>
+          <p class="mb-0 mt-2">The Morphic {{ browserName }} extension is being updated. Gathering search results is unavailable until the new version is published.</p>
         </div>
 
-        <!-- Supported Browser - Outdated Extension -->
-        <div *ngIf="!extensionStatus.isChecking && extensionStatus.browser !== 'unsupported' && isExtensionOutdated" class="alert alert-warning">
+        <!-- User must install or update -->
+        <div *ngIf="!extensionStatus.isChecking && extensionNotice === 'update'" class="alert alert-warning">
           <strong>Extension Update Required</strong>
-          <p class="mb-2 mt-2">Your Morphic extension (v{{extensionStatus.version}}) is outdated. Please update to v{{REQUIRED_EXTENSION_VERSION}}.</p>
-          <a *ngIf="installUrl"
-             [href]="installUrl"
+          <p class="mb-2 mt-2">To gather search results, install or update the Morphic {{ browserName }} extension to v{{REQUIRED_EXTENSION_VERSION}}.</p>
+          <a [href]="storeUrl"
              target="_blank"
              class="btn btn-sm btn-outline-primary">
-            Update Extension
+            Get Extension
           </a>
         </div>
 

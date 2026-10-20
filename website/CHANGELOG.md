@@ -5,6 +5,21 @@ All notable changes to the Morphic Website will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0] - 2026-10-20
+
+### Added
+- **Firefox and Edge Support**: The extension check now works in Chrome, Edge and Firefox
+  - Extension version is read from the attribute set by the extension's handshake content script
+  - Edge is detected as a supported browser
+- **Extension Notice States**: The extension notice is one of unsupported, updating or update
+  - Updating means the store has no compatible build yet and gathering is unavailable
+  - Update links to the browser's store listing to install or update
+  - Store URLs are configured per browser
+
+### Changed
+- Supported extension version is 1.1.0
+- Chrome extension detection no longer messages the extension by its store ID
+
 ## [1.3.0] - 2025-06-27
 
 ### Added

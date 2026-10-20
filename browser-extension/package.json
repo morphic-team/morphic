@@ -1,5 +1,5 @@
 {
-  "description": "Morphs.io browser extension",
+  "description": "Morphs.io browser extension for Chrome and Firefox",
   "devDependencies": {
     "@eslint/js": "^9.28.0",
     "@eslint/json": "^0.12.0",
@@ -10,21 +10,28 @@
     "eslint": "^9.28.0",
     "eslint-config-prettier": "^10.1.5",
     "prettier": "^3.5.3",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "web-ext": "^10.8.0"
   },
   "name": "morphic-browser-extension",
   "private": true,
   "scripts": {
     "build:chrome": "node scripts/build.js --target=dev --browser=chrome",
+    "build:firefox": "node scripts/build.js --target=dev --browser=firefox",
     "check": "npm run check:format && npm run check:lint && npm run check:type",
     "check:format": "prettier --check src/ scripts/ *.json *.js",
     "check:lint": "eslint src/ scripts/ package.json tsconfig.json",
     "check:type": "tsc --noEmit",
     "clean": "rm -rf dist/ .build/ *.crx *.zip",
     "dev:chrome": "node scripts/build.js --target=dev --browser=chrome --watch",
+    "dev:firefox": "node scripts/build.js --target=dev --browser=firefox --watch",
     "fix": "prettier --write src/ scripts/ *.json *.js && eslint src/ scripts/ package.json tsconfig.json --fix",
+    "lint:firefox": "web-ext lint --source-dir dist/firefox/dev",
+    "package:amo": "node scripts/build.js --target=release --store=amo",
     "package:cws": "node scripts/build.js --target=release --store=cws",
-    "preview:cws": "node scripts/build.js --target=preview --store=cws"
+    "preview:amo": "node scripts/build.js --target=preview --store=amo",
+    "preview:cws": "node scripts/build.js --target=preview --store=cws",
+    "run:firefox": "web-ext run --source-dir dist/firefox/dev --start-url https://morphs.io"
   },
   "version": "1.0.1"
 }

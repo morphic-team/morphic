@@ -1,17 +1,18 @@
 <div>
-  <!-- Chrome Extension Notice -->
+  <!-- Extension Notice -->
   <div *ngIf="extensionStatus.isChecking" class="alert alert-info mb-3">
     <div class="d-flex align-items-center">
       <span class="spinner-border spinner-border-sm me-2"></span>
-      Checking Chrome extension...
+      Checking {{ browserName }} extension...
     </div>
   </div>
 
   <div *ngIf="!extensionStatus.isChecking && showExtensionNotice && !extensionStatus.isInstalled" class="alert alert-warning alert-dismissible mb-3">
-    <strong>Chrome Extension Required</strong>
-    <p class="mb-2 mt-2">To gather search results, install the Morphic Chrome extension.</p>
-    <a href="https://chrome.google.com/webstore/detail/fhigbmfhhlpkjbdamhjmfajhkfbkkgah" 
-       target="_blank" 
+    <strong>{{ browserName }} Extension Required</strong>
+    <p class="mb-2 mt-2">To gather search results, install the Morphic {{ browserName }} extension.</p>
+    <a *ngIf="installUrl"
+       [href]="installUrl"
+       target="_blank"
        class="btn btn-sm btn-outline-primary me-2">
       Install Extension
     </a>
@@ -21,8 +22,9 @@
   <div *ngIf="!extensionStatus.isChecking && showExtensionNotice && isExtensionOutdated" class="alert alert-warning alert-dismissible mb-3">
     <strong>Extension Update Required</strong>
     <p class="mb-2 mt-2">Your Morphic extension (v{{extensionStatus.version}}) is outdated. Please update to v{{REQUIRED_EXTENSION_VERSION}}.</p>
-    <a href="https://chrome.google.com/webstore/detail/fhigbmfhhlpkjbdamhjmfajhkfbkkgah" 
-       target="_blank" 
+    <a *ngIf="installUrl"
+       [href]="installUrl"
+       target="_blank"
        class="btn btn-sm btn-outline-primary me-2">
       Update Extension
     </a>

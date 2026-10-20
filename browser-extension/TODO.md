@@ -24,14 +24,14 @@ Improve overall URL extraction robustness:
 - Improved selector reliability as Google updates their UI
 
 ### 🌐 Multi-Browser Support
-**Status**: Research Phase  
+**Status**: In Progress  
 **Priority**: Medium  
 
 Extend support beyond Chrome:
-- Firefox WebExtensions API compatibility
-- Edge browser support
-- Safari Web Extension (pending feasibility study)
-- Shared codebase with browser-specific adapters
+- Firefox build implemented, pending end-to-end verification and AMO submission
+- Edge browser support (Chrome build, website detection change only)
+- Safari Web Extension (feasible, needs Xcode wrapper and Apple distribution)
+- See [docs/MULTI_BROWSER_ROADMAP.md](docs/MULTI_BROWSER_ROADMAP.md)
 
 ## Notes
 

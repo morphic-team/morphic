@@ -94,18 +94,23 @@ module.exports = [
     }
   },
   {
-    files: ['src/shared/logger.ts', 'src/shared/morphic-scraper.ts'],
+    files: [
+      'src/shared/logger.ts',
+      'src/shared/morphic-scraper.ts',
+      'src/shared/version-handshake.ts'
+    ],
     rules: {
-      'no-redeclare': 'off', // logger/Scraper is defined in these files
+      'no-redeclare': 'off', // logger/Scraper/announceExtensionVersion are defined in these files
       '@typescript-eslint/no-unused-vars': 'off' // These are exported globals
     }
   },
   {
-    files: ['src/shared/morphic-scraper.ts', 'src/chrome/background.ts', 'src/chrome/content.ts'],
+    files: ['src/shared/*.ts', 'src/chrome/*.ts', 'src/firefox/*.ts'],
     languageOptions: {
       globals: {
         logger: 'readonly',
-        Scraper: 'readonly'
+        Scraper: 'readonly',
+        announceExtensionVersion: 'readonly'
       }
     }
   },
@@ -127,7 +132,7 @@ module.exports = [
     }
   },
   {
-    files: ['src/chrome/manifest.json'],
+    files: ['src/chrome/manifest.json', 'src/firefox/manifest.json'],
     language: 'json/json',
     rules: {
       'json/no-duplicate-keys': 'error',

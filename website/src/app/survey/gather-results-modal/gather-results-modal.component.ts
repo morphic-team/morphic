@@ -29,7 +29,7 @@ export class GatherResultsModalComponent {
     isChecking: false,
     isInstalled: false,
     version: '',
-    isChromeBrowser: false
+    browser: 'unsupported'
   };
   googleSearchUrl: string = '';
   
@@ -141,8 +141,16 @@ export class GatherResultsModalComponent {
     return this.extensionService.RECOMMENDED_EXTENSION_VERSION;
   }
 
-  isChromeBrowser(): boolean {
-    return this.extensionService.isChromeBrowser();
+  isSupportedBrowser(): boolean {
+    return this.extensionService.isSupportedBrowser();
+  }
+
+  get browserName(): string {
+    return this.extensionService.browserName(this.extensionStatus.browser);
+  }
+
+  get installUrl(): string | null {
+    return this.extensionService.installUrl(this.extensionStatus.browser);
   }
 
   private generateUrl() {

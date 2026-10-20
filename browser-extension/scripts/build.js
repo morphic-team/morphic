@@ -32,6 +32,14 @@ const StoreBrowser = {
   [Store.AMO]: Browser.FIREFOX
 };
 
+// Name used in the packaged artifact filename for each store. Edge keeps its own
+// name because its package is the Chrome build.
+const StoreArtifactName = {
+  [Store.CWS]: 'chrome',
+  [Store.EDGE]: 'edge',
+  [Store.AMO]: 'firefox'
+};
+
 // Stores that take a plain zip rather than a signed CRX
 const ZipStores = [Store.EDGE, Store.AMO];
 
@@ -292,7 +300,7 @@ async function packageAsCRX(config) {
 
   ensureDir(config.outputDir);
 
-  const filename = `morphic-chrome-extension-v${config.version}.crx`;
+  const filename = `morphic-${StoreArtifactName[config.store]}-extension-v${config.version}.crx`;
   const crxPath = path.join(config.outputDir, filename);
   const chromeBinary = process.env.CHROME_BINARY || 'google-chrome';
   const cmd = `"${chromeBinary}" --pack-extension="${config.scratchDir}" --pack-extension-key="${privateKeyPath}"`;
@@ -324,7 +332,7 @@ async function packageAsCRX(config) {
 async function packageAsZip(config) {
   ensureDir(config.outputDir);
 
-  const filename = `morphic-${config.store}-extension-v${config.version}.zip`;
+  const filename = `morphic-${StoreArtifactName[config.store]}-extension-v${config.version}.zip`;
   const zipPath = path.join(config.outputDir, filename);
 
   console.log(`Creating zip: ${filename}`);

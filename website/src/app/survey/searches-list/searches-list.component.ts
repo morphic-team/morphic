@@ -3,7 +3,7 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { SearchesService, Search } from '../services/searches.service';
 import { StorageService } from '../../services/storage.service';
-import { ExtensionService, ExtensionStatus } from '../../services/extension.service';
+import { ExtensionService, ExtensionStatus, ExtensionNotice } from '../../services/extension.service';
 import { GatherResultsModalComponent } from '../gather-results-modal/gather-results-modal.component';
 
 @Component({
@@ -82,10 +82,6 @@ export class SearchesListComponent implements OnInit {
     return this.extensionService.isExtensionValid(this.extensionStatus);
   }
   
-  get isExtensionOutdated(): boolean {
-    return this.extensionStatus.isInstalled && !this.extensionService.isVersionValid(this.extensionStatus.version);
-  }
-  
   get REQUIRED_EXTENSION_VERSION(): string {
     return this.extensionService.RECOMMENDED_EXTENSION_VERSION;
   }
@@ -94,8 +90,12 @@ export class SearchesListComponent implements OnInit {
     return this.extensionService.browserName(this.extensionStatus.browser);
   }
 
-  get installUrl(): string | null {
-    return this.extensionService.installUrl(this.extensionStatus.browser);
+  get storeUrl(): string | null {
+    return this.extensionService.storeUrl(this.extensionStatus.browser);
+  }
+
+  get extensionNotice(): ExtensionNotice {
+    return this.extensionService.noticeFor(this.extensionStatus);
   }
 
   dismissExtensionNotice(): void {

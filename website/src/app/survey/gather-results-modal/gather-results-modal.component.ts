@@ -2,7 +2,7 @@ import { Component, ElementRef, ViewChild, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SearchesService, Search } from '../services/searches.service';
-import { ExtensionService, ExtensionStatus } from '../../services/extension.service';
+import { ExtensionService, ExtensionStatus, ExtensionNotice } from '../../services/extension.service';
 
 declare var bootstrap: any;
 
@@ -133,10 +133,6 @@ export class GatherResultsModalComponent {
     return this.extensionService.isExtensionValid(this.extensionStatus);
   }
   
-  get isExtensionOutdated(): boolean {
-    return this.extensionStatus.isInstalled && !this.extensionService.isVersionValid(this.extensionStatus.version);
-  }
-  
   get REQUIRED_EXTENSION_VERSION(): string {
     return this.extensionService.RECOMMENDED_EXTENSION_VERSION;
   }
@@ -149,8 +145,12 @@ export class GatherResultsModalComponent {
     return this.extensionService.browserName(this.extensionStatus.browser);
   }
 
-  get installUrl(): string | null {
-    return this.extensionService.installUrl(this.extensionStatus.browser);
+  get storeUrl(): string | null {
+    return this.extensionService.storeUrl(this.extensionStatus.browser);
+  }
+
+  get extensionNotice(): ExtensionNotice {
+    return this.extensionService.noticeFor(this.extensionStatus);
   }
 
   private generateUrl() {

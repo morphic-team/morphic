@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Fixed
+- Fixed Google Images result parsing for Google's current page markup
 - Fixed the Close button on the error overlay
 
 ## [1.0.1] - 2025-01-15

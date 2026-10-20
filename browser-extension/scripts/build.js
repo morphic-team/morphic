@@ -312,7 +312,7 @@ async function packageAsCRX(config) {
       const sourceCrxPath = path.join(config.scratchDir, '..', '.build.crx');
       if (fs.existsSync(sourceCrxPath)) {
         fs.renameSync(sourceCrxPath, crxPath);
-        console.log(`✅ Signed CRX created: dist/${config.target}/${filename}`);
+        console.log(`✅ Signed CRX created: dist/${config.browser}/${config.target}/${filename}`);
         resolve();
       } else {
         reject(new Error('Chrome failed to create CRX file'));

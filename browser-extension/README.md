@@ -113,7 +113,7 @@ The dev build includes:
 npm run preview:cws
 
 # Outputs:
-# - dist/chrome/preview/morphic-chrome-extension-v1.0.0.crx (identical to release)
+# - dist/chrome/preview/morphic-chrome-extension-v1.1.0.crx (identical to release)
 # - dist/chrome/preview/unpacked/ (for loading unpacked with stable ID)
 ```
 
@@ -122,8 +122,11 @@ npm run preview:cws
 ```bash
 # Create final CRX for Chrome Web Store upload
 npm run package:cws
+# Output: dist/chrome/release/morphic-chrome-extension-v1.1.0.crx
 
-# Output: dist/chrome/release/morphic-chrome-extension-v1.0.0.crx
+# Create zip of the same Chrome build for Microsoft Edge Add-ons
+npm run package:edge
+# Output: dist/chrome/release/morphic-edge-extension-v1.1.0.zip
 ```
 
 ## Firefox
@@ -132,9 +135,6 @@ The same shared code builds a Firefox (Manifest V3) extension from `src/firefox/
 
 ### Differences from the Chrome build
 
-- **Version check**: Firefox has no web-page-to-extension messaging (`externally_connectable`),
-  so there is no background script. Instead `handshake.js` runs on morphs.io at `document_start`
-  and sets `data-morphic-extension-version` on the `<html>` element, which the website reads.
 - **Localhost**: Firefox match patterns cannot contain a port, so dev builds match `http://localhost/*`
   (any port) rather than `http://localhost:*/*`.
 - **Host permission**: Firefox asks the user to grant access to google.com and morphs.io at install
@@ -171,8 +171,8 @@ so distribution requires either an AMO listing or `web-ext sign` for a self-host
 
 ### Core Components
 
-- **Background Script**: Minimal service worker handling version checks
 - **Content Script**: Injected into Google search pages, handles scraping
+- **Handshake Script**: Injected into the Morphic website, publishes the installed version
 - **Shared Scraper**: Browser-agnostic scraping logic
 
 ### Communication Flow
@@ -186,7 +186,8 @@ so distribution requires either an AMO listing or `web-ext sign` for a self-host
 ### Version Management
 
 - Version synced from `package.json` during build
-- Website validates extension version before allowing searches
+- `handshake.js` runs on morphs.io at `document_start` and sets `data-morphic-extension-version`
+  on the `<html>` element; the website reads it to validate the version before allowing searches
 - Smart dismissal system resets warnings when version changes
 
 ## Security
@@ -201,7 +202,7 @@ so distribution requires either an AMO listing or `web-ext sign` for a self-host
 ### Chrome Web Store
 
 1. Build release CRX: `npm run package:cws`
-2. Upload `dist/chrome/release/morphic-chrome-extension-v1.0.0.crx` to Chrome Web Store
+2. Upload `dist/chrome/release/morphic-chrome-extension-v1.1.0.crx` to Chrome Web Store
 3. Signed CRX provides verified upload proof
 
 ### Local Testing

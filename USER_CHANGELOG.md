@@ -2,6 +2,15 @@
 
 Updates and improvements to make your research easier and more efficient.
 
+## [1.4.0] - 2026-10-20
+
+### New Features
+- **Firefox and Edge Support**: The Morphic extension now works in Firefox and Microsoft Edge as well as Chrome
+  - The website tells you when the extension is being updated and gathering is temporarily unavailable
+
+### Improvements
+- **Gathering Fixed**: Gathering Google Images results works again after changes to Google's results page
+
 ## [1.3.0] - 2025-06-27
 
 ### New Features

@@ -1,5 +1,5 @@
 {
-  "description": "Morphs.io browser extension for Chrome and Firefox",
+  "description": "Morphs.io browser extension for Chrome, Edge and Firefox",
   "devDependencies": {
     "@eslint/js": "^9.28.0",
     "@eslint/json": "^0.12.0",
@@ -29,9 +29,11 @@
     "lint:firefox": "web-ext lint --source-dir dist/firefox/dev",
     "package:amo": "node scripts/build.js --target=release --store=amo",
     "package:cws": "node scripts/build.js --target=release --store=cws",
+    "package:edge": "node scripts/build.js --target=release --store=edge",
     "preview:amo": "node scripts/build.js --target=preview --store=amo",
     "preview:cws": "node scripts/build.js --target=preview --store=cws",
+    "preview:edge": "node scripts/build.js --target=preview --store=edge",
     "run:firefox": "web-ext run --source-dir dist/firefox/dev --start-url https://morphs.io"
   },
-  "version": "1.0.1"
+  "version": "1.1.0"
 }

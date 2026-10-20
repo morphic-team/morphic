@@ -5,6 +5,18 @@ All notable changes to the Morphic project: application, infrastructure, deploym
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0] - 2026-10-20
+
+### Added
+- **Multi-Browser Extension**: The Morphic extension now builds for Chrome, Edge and Firefox
+  - Firefox build with a handshake content script that publishes the installed version to the website
+  - Edge packaging of the Chrome build for Microsoft Edge Add-ons
+  - Website detects all three browsers and shows a notice when the store has no compatible extension
+
+### Fixed
+- **Google Images Gathering**: Updated the extension for Google's current result page markup
+- Extension error overlay Close button
+
 ## [1.3.0] - 2025-06-27
 
 ### Added

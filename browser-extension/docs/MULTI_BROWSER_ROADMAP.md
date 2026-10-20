@@ -6,25 +6,24 @@ Plan for shipping the Morphic extension on Chrome, Firefox, Edge and Safari from
 ## Current State
 - `src/shared/` holds all scraping, JWT and overlay logic and is browser-agnostic
 - `src/chrome/` and `src/firefox/` hold only entry points and manifests
-- `scripts/build.js` builds per browser (`--browser=chrome|firefox`) and packages per store (`--store=cws|amo`)
+- Every build carries a handshake content script that publishes the installed version to the website
+- `scripts/build.js` builds per browser (`--browser=chrome|firefox`) and packages per store (`--store=cws|edge|amo`)
 - Output lives under `dist/<browser>/<target>/`
 
-## Firefox (built, pending end-to-end verification)
+## Firefox
 - [x] Manifest V3 with `browser_specific_settings.gecko` (fixed ID, min version 140, data collection declaration)
-- [x] No background script. Firefox does not support `externally_connectable` for web pages, so the
-      version check uses a handshake content script that writes the version to a data attribute on morphs.io
 - [x] Website detects Firefox and reads the handshake attribute
 - [x] Backend CORS allows `moz-extension://*`
 - [x] Zip packaging and `web-ext lint` passes
-- [ ] Verify Google Images serves the same markup to Firefox (the scraper depends on obfuscated class names)
+- [x] Google Images serves the same markup to Firefox
 - [ ] Confirm the install-time host permission prompt flow and surface a "permission denied" state on the website
-- [ ] Decide between AMO listing and self-hosted signed xpi, then add an install URL to the website
+- [ ] Decide between AMO listing and self-hosted signed xpi, then add the store URL to the website
 - [ ] Review the `data_collection_permissions` declaration before AMO submission
 
 ## Edge
-- Loads the Chrome build unchanged
-- [ ] Stop excluding `edg/` user agents in the website's browser detection
-- [ ] Microsoft Edge Add-ons listing
+- [x] Loads the Chrome build unchanged, zipped by `package:edge`
+- [x] Website detects Edge and reads the handshake attribute
+- [ ] Microsoft Edge Add-ons listing, then add the store URL to the website
 
 ## Safari
 - Safari 15.4+ supports `externally_connectable`, but the handshake content script approach avoids the
@@ -33,11 +32,6 @@ Plan for shipping the Morphic extension on Chrome, Firefox, Edge and Safari from
 - [ ] Apple Developer Program membership and macOS build runner
 - [ ] Mac App Store or notarized distribution, with per-site permission grant in Safari settings
 - [ ] Verify Google Images markup and hover simulation in WebKit
-
-## Possible Simplification
-Chrome could adopt the handshake content script too. That would remove the background script and
-`externally_connectable` from the Chrome build and leave a single detection path on the website.
-This must wait for a Chrome extension release so the website keeps working with the installed base.
 
 ## Risk Assessment
 - **Low**: shared scraping code and build system

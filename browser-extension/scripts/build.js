@@ -21,14 +21,19 @@ const Browser = {
 
 const Store = {
   CWS: 'cws',
+  EDGE: 'edge',
   AMO: 'amo'
 };
 
-// Each store accepts packages for exactly one browser
+// Each store accepts packages for exactly one browser. Edge Add-ons takes the Chrome build.
 const StoreBrowser = {
   [Store.CWS]: Browser.CHROME,
+  [Store.EDGE]: Browser.CHROME,
   [Store.AMO]: Browser.FIREFOX
 };
+
+// Stores that take a plain zip rather than a signed CRX
+const ZipStores = [Store.EDGE, Store.AMO];
 
 // Firefox match patterns do not support port numbers, so a bare localhost
 // pattern is used there and matches any port.
@@ -91,25 +96,6 @@ function compileTypeScript(tsCode) {
   });
 
   return result.outputText;
-}
-
-function injectLoggerIntoScript(scriptPath, config) {
-  const loggerPath = path.join(srcDir, 'shared', 'logger.ts');
-
-  if (!fs.existsSync(scriptPath)) {
-    throw new Error(`Script file not found: ${scriptPath}`);
-  }
-
-  if (!fs.existsSync(loggerPath)) {
-    throw new Error('logger.ts not found - required for build');
-  }
-
-  let scriptCode = fs.readFileSync(scriptPath, 'utf8');
-  let loggerCode = fs.readFileSync(loggerPath, 'utf8');
-  loggerCode = processLoggerCode(loggerCode, config);
-
-  const combinedTypeScript = `${loggerCode}\n\n${scriptCode}`;
-  return compileTypeScript(combinedTypeScript);
 }
 
 function parseArg(args, flag) {
@@ -190,8 +176,8 @@ function resolveBuildConfig(args) {
     // Derived properties
     shouldPreserveKey: target === BuildTarget.DEV && resolvedBrowser === Browser.CHROME,
     shouldIncludeLocalhost: target === BuildTarget.DEV,
-    shouldCreateCRX: shouldPackage && resolvedBrowser === Browser.CHROME,
-    shouldCreateZip: shouldPackage && resolvedBrowser === Browser.FIREFOX
+    shouldCreateCRX: shouldPackage && store === Store.CWS,
+    shouldCreateZip: shouldPackage && ZipStores.includes(store)
   };
 }
 
@@ -221,15 +207,7 @@ function processManifest(config) {
     ? [PRODUCTION_WEBSITE_MATCH, ...LocalhostMatches[config.browser]]
     : [PRODUCTION_WEBSITE_MATCH];
 
-  // Handle externally_connectable (Chrome version check)
-  if (manifest.externally_connectable?.matches) {
-    manifest.externally_connectable.matches = websiteMatches;
-    if (config.shouldIncludeLocalhost) {
-      console.log('Added localhost to externally_connectable');
-    }
-  }
-
-  // Handle the handshake content script (Firefox version check)
+  // Handle the handshake content script (website version check)
   const handshakeScript = (manifest.content_scripts || []).find(script =>
     script.js.includes('handshake.js')
   );
@@ -299,15 +277,6 @@ function createHandshakeScript(config) {
 }
 
 function copyAssets(config) {
-  // Process and copy background.js with logger
-  const backgroundPath = path.join(srcDir, config.browser, 'background.ts');
-
-  if (fs.existsSync(backgroundPath)) {
-    const backgroundCode = injectLoggerIntoScript(backgroundPath, config);
-    fs.writeFileSync(path.join(config.scratchDir, 'background.js'), backgroundCode);
-    console.log('Processed background.js with logger');
-  }
-
   // Copy shared assets
   const iconPath = path.join(srcDir, 'assets', 'green-icon.png');
   if (fs.existsSync(iconPath)) {
@@ -355,7 +324,7 @@ async function packageAsCRX(config) {
 async function packageAsZip(config) {
   ensureDir(config.outputDir);
 
-  const filename = `morphic-firefox-extension-v${config.version}.zip`;
+  const filename = `morphic-${config.store}-extension-v${config.version}.zip`;
   const zipPath = path.join(config.outputDir, filename);
 
   console.log(`Creating zip: ${filename}`);

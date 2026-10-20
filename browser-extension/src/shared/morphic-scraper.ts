@@ -185,9 +185,16 @@ class OverlayManager {
 
     const actionsEl = document.getElementById('morphic-actions');
     if (actionsEl) {
-      actionsEl.innerHTML = `
-        <button onclick="document.getElementById('morphic-overlay').remove()" style="background: #dc2626; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer;">Close</button>
-      `;
+      // The listener is attached from the content script rather than via an inline
+      // onclick attribute, because inline handlers run in the page context and are
+      // blocked by Google's Content Security Policy.
+      const closeButton = document.createElement('button');
+      closeButton.textContent = 'Close';
+      closeButton.style.cssText =
+        'background: #dc2626; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer;';
+      closeButton.addEventListener('click', () => this.cleanup());
+
+      actionsEl.replaceChildren(closeButton);
       actionsEl.style.display = 'block';
     }
   }

@@ -98,7 +98,7 @@ openssl rsa -pubout -in private.pem -out public.pem
 # Start development with file watching
 npm run dev:chrome
 
-# Load unpacked extension from: dist/dev/
+# Load unpacked extension from: dist/chrome/dev/
 ```
 
 The dev build includes:
@@ -113,8 +113,8 @@ The dev build includes:
 npm run preview:cws
 
 # Outputs:
-# - dist/preview/morphic-chrome-extension-v1.0.0.crx (identical to release)
-# - dist/preview/unpacked/ (for loading unpacked with stable ID)
+# - dist/chrome/preview/morphic-chrome-extension-v1.0.0.crx (identical to release)
+# - dist/chrome/preview/unpacked/ (for loading unpacked with stable ID)
 ```
 
 ### Release Builds
@@ -123,7 +123,7 @@ npm run preview:cws
 # Create final CRX for Chrome Web Store upload
 npm run package:cws
 
-# Output: dist/release/morphic-chrome-extension-v1.0.0.crx
+# Output: dist/chrome/release/morphic-chrome-extension-v1.0.0.crx
 ```
 
 ## Extension Architecture
@@ -160,13 +160,13 @@ npm run package:cws
 ### Chrome Web Store
 
 1. Build release CRX: `npm run package:cws`
-2. Upload `dist/release/morphic-chrome-extension-v1.0.0.crx` to Chrome Web Store
+2. Upload `dist/chrome/release/morphic-chrome-extension-v1.0.0.crx` to Chrome Web Store
 3. Signed CRX provides verified upload proof
 
 ### Local Testing
 
 1. Build preview: `npm run preview:cws`
-2. Load unpacked from `dist/preview/unpacked/` in Chrome Developer Mode
+2. Load unpacked from `dist/chrome/preview/unpacked/` in Chrome Developer Mode
 3. Extension maintains consistent ID for testing
 
 ## Troubleshooting
@@ -177,7 +177,7 @@ Chrome often blocks local CRX files. Use unpacked extension for testing:
 
 ```bash
 npm run preview:cws
-# Load unpacked from: dist/preview/unpacked/
+# Load unpacked from: dist/chrome/preview/unpacked/
 ```
 
 ### Chrome Binary Not Found

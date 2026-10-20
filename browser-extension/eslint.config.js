@@ -62,7 +62,8 @@ module.exports = [
         HTMLDivElement: 'readonly',
         Element: 'readonly',
         HTMLElement: 'readonly',
-        HTMLAnchorElement: 'readonly'
+        HTMLAnchorElement: 'readonly',
+        URL: 'readonly'
       }
     },
     plugins: {

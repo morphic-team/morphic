@@ -15,12 +15,29 @@ const BuildTarget = {
 };
 
 const Browser = {
-  CHROME: 'chrome'
+  CHROME: 'chrome',
+  FIREFOX: 'firefox'
 };
 
 const Store = {
-  CWS: 'cws'
+  CWS: 'cws',
+  AMO: 'amo'
 };
+
+// Each store accepts packages for exactly one browser
+const StoreBrowser = {
+  [Store.CWS]: Browser.CHROME,
+  [Store.AMO]: Browser.FIREFOX
+};
+
+// Firefox match patterns do not support port numbers, so a bare localhost
+// pattern is used there and matches any port.
+const LocalhostMatches = {
+  [Browser.CHROME]: ['http://localhost:*/*', 'https://localhost:*/*'],
+  [Browser.FIREFOX]: ['http://localhost/*', 'https://localhost/*']
+};
+
+const PRODUCTION_WEBSITE_MATCH = 'https://morphs.io/*';
 
 // =============================================================================
 // PATHS & CONSTANTS
@@ -151,23 +168,30 @@ function resolveBuildConfig(args) {
     throw new Error(`Invalid store: ${store}`);
   }
 
+  if (store && browser && StoreBrowser[store] !== browser) {
+    throw new Error(`Store ${store} does not accept ${browser} packages`);
+  }
+
+  const resolvedBrowser = browser || (store ? StoreBrowser[store] : Browser.CHROME);
   const version = readPackageJson().version;
+  const shouldPackage = target === BuildTarget.RELEASE || (target === BuildTarget.PREVIEW && store);
 
   return {
     target,
-    browser: browser || Browser.CHROME,
+    browser: resolvedBrowser,
     store,
     watch,
     version,
 
     // Paths
     scratchDir: buildDir,
-    outputDir: path.join(distDir, target),
+    outputDir: path.join(distDir, resolvedBrowser, target),
 
     // Derived properties
-    shouldPreserveKey: target === BuildTarget.DEV,
+    shouldPreserveKey: target === BuildTarget.DEV && resolvedBrowser === Browser.CHROME,
     shouldIncludeLocalhost: target === BuildTarget.DEV,
-    shouldCreateCRX: target === BuildTarget.RELEASE || (target === BuildTarget.PREVIEW && store)
+    shouldCreateCRX: shouldPackage && resolvedBrowser === Browser.CHROME,
+    shouldCreateZip: shouldPackage && resolvedBrowser === Browser.FIREFOX
   };
 }
 
@@ -193,17 +217,26 @@ function processManifest(config) {
     console.log('Removed manifest key field');
   }
 
-  // Handle externally_connectable
+  const websiteMatches = config.shouldIncludeLocalhost
+    ? [PRODUCTION_WEBSITE_MATCH, ...LocalhostMatches[config.browser]]
+    : [PRODUCTION_WEBSITE_MATCH];
+
+  // Handle externally_connectable (Chrome version check)
   if (manifest.externally_connectable?.matches) {
+    manifest.externally_connectable.matches = websiteMatches;
     if (config.shouldIncludeLocalhost) {
-      manifest.externally_connectable.matches = [
-        'https://morphs.io/*',
-        'http://localhost:*/*',
-        'https://localhost:*/*'
-      ];
       console.log('Added localhost to externally_connectable');
-    } else {
-      manifest.externally_connectable.matches = ['https://morphs.io/*'];
+    }
+  }
+
+  // Handle the handshake content script (Firefox version check)
+  const handshakeScript = (manifest.content_scripts || []).find(script =>
+    script.js.includes('handshake.js')
+  );
+  if (handshakeScript) {
+    handshakeScript.matches = websiteMatches;
+    if (config.shouldIncludeLocalhost) {
+      console.log('Added localhost to handshake content script');
     }
   }
 
@@ -238,6 +271,31 @@ function createContentScript(config) {
   const compiledJavaScript = compileTypeScript(combinedTypeScript);
   fs.writeFileSync(outputPath, compiledJavaScript);
   console.log('Created combined content.js');
+}
+
+function createHandshakeScript(config) {
+  const browserPath = path.join(srcDir, config.browser, 'handshake.ts');
+  if (!fs.existsSync(browserPath)) {
+    return;
+  }
+
+  const loggerPath = path.join(srcDir, 'shared', 'logger.ts');
+  const sharedPath = path.join(srcDir, 'shared', 'version-handshake.ts');
+  const outputPath = path.join(config.scratchDir, 'handshake.js');
+
+  if (!fs.existsSync(loggerPath) || !fs.existsSync(sharedPath)) {
+    throw new Error('Required handshake script files not found');
+  }
+
+  let loggerCode = fs.readFileSync(loggerPath, 'utf8');
+  loggerCode = processLoggerCode(loggerCode, config);
+
+  const sharedCode = fs.readFileSync(sharedPath, 'utf8');
+  const browserCode = fs.readFileSync(browserPath, 'utf8');
+  const combinedTypeScript = `${loggerCode}\n\n${sharedCode}\n\n${browserCode}`;
+
+  fs.writeFileSync(outputPath, compileTypeScript(combinedTypeScript));
+  console.log('Created combined handshake.js');
 }
 
 function copyAssets(config) {
@@ -294,6 +352,38 @@ async function packageAsCRX(config) {
   });
 }
 
+async function packageAsZip(config) {
+  ensureDir(config.outputDir);
+
+  const filename = `morphic-firefox-extension-v${config.version}.zip`;
+  const zipPath = path.join(config.outputDir, filename);
+
+  console.log(`Creating zip: ${filename}`);
+
+  return new Promise((resolve, reject) => {
+    exec(`cd "${config.scratchDir}" && zip -r -X "${zipPath}" .`, error => {
+      if (error) {
+        reject(error);
+        return;
+      }
+      console.log(`✅ Zip created: dist/${config.browser}/${config.target}/${filename}`);
+      resolve();
+    });
+  });
+}
+
+async function copyUnpackedPreview(config) {
+  const unpackedDir = path.join(config.outputDir, 'unpacked');
+  cleanDir(unpackedDir);
+
+  fs.readdirSync(config.scratchDir).forEach(file => {
+    fs.copyFileSync(path.join(config.scratchDir, file), path.join(unpackedDir, file));
+  });
+
+  console.log('✅ Preview unpacked copy created for testing');
+  console.log(`📋 Load temporary add-on from: dist/${config.browser}/${config.target}/unpacked/`);
+}
+
 async function extractPreview(config) {
   const unpackedDir = path.join(config.outputDir, 'unpacked');
   cleanDir(unpackedDir);
@@ -326,7 +416,9 @@ async function extractPreview(config) {
       }
 
       console.log('✅ Preview CRX extracted for testing');
-      console.log(`📋 Load unpacked extension from: dist/${config.target}/unpacked/`);
+      console.log(
+        `📋 Load unpacked extension from: dist/${config.browser}/${config.target}/unpacked/`
+      );
       resolve();
     });
   });
@@ -343,7 +435,7 @@ async function copyToOutput(config) {
     fs.copyFileSync(srcPath, destPath);
   });
 
-  console.log(`✅ Build output copied to: dist/${config.target}/`);
+  console.log(`✅ Build output copied to: dist/${config.browser}/${config.target}/`);
 }
 
 // =============================================================================
@@ -355,7 +447,7 @@ async function build(config) {
     ? `${config.target} (${config.store})`
     : `${config.target} (${config.browser})`;
 
-  console.log(`\nBuilding Chrome Extension v${config.version} - ${buildTypeDesc}\n`);
+  console.log(`\nBuilding ${config.browser} extension v${config.version} - ${buildTypeDesc}\n`);
 
   // Clean scratch directory
   cleanDir(config.scratchDir);
@@ -363,12 +455,13 @@ async function build(config) {
   // Clean output directory to remove stale artifacts
   if (fs.existsSync(config.outputDir)) {
     fs.rmSync(config.outputDir, { recursive: true, force: true });
-    console.log(`Cleaned stale artifacts from: dist/${config.target}/`);
+    console.log(`Cleaned stale artifacts from: dist/${config.browser}/${config.target}/`);
   }
 
   // Build in scratch directory
   processManifest(config);
   createContentScript(config);
+  createHandshakeScript(config);
   copyAssets(config);
 
   console.log('\nBuild complete');
@@ -380,6 +473,12 @@ async function build(config) {
     // For preview builds, extract the CRX for testing
     if (config.target === BuildTarget.PREVIEW) {
       await extractPreview(config);
+    }
+  } else if (config.shouldCreateZip) {
+    await packageAsZip(config);
+
+    if (config.target === BuildTarget.PREVIEW) {
+      await copyUnpackedPreview(config);
     }
   } else {
     // For dev builds, copy unpacked files to output
@@ -393,7 +492,7 @@ async function build(config) {
     console.log('🔍 Ready for production testing');
   } else {
     console.log('✅ Ready for development');
-    console.log(`Load unpacked extension from: dist/${config.target}/`);
+    console.log(`Load unpacked extension from: dist/${config.browser}/${config.target}/`);
   }
 }
 

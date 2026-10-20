@@ -30,10 +30,14 @@ const MORPHIC_TOKEN_REGEX = /morphic:([A-Za-z0-9\-_]+\.[A-Za-z0-9\-_]+\.[A-Za-z0
 const EXPECTED_AUDIENCE = 'morphic-browser-extension';
 const EXPECTED_ISSUER = 'morphic-api';
 
-// CSS selectors for DOM elements that the scraper interacts with
-const RESULT_CONTAINER_SELECTOR = '.MjjYud'; // Selector for the container holding the results
-const RESULT_SELECTOR = '.eA0Zlc.WghbWd';
-const SEE_MORE_BUTTON_SELECTOR = 'div.GNJvt'; // Selector for the "See more" button to load more results
+// CSS selectors for DOM elements that the scraper interacts with.
+// Google Images renders each result as a tile carrying a data-docid attribute. Results
+// loaded by "More results" land in additional containers, so tiles are queried
+// document-wide rather than inside a single container.
+const RESULT_SELECTOR = 'div.ivg-i[data-docid]';
+const RESULT_LINK_SELECTOR = '[data-img-wrapper] > a'; // Anchor whose href gains imgurl/imgrefurl after hover
+const RESULT_HOVER_SELECTOR = '[data-img-wrapper] img'; // Element whose mouseover makes Google populate the link
+const SEE_MORE_BUTTON_SELECTOR = 'a[jsname="oHxHid"]'; // "More results" button at the end of the first page
 
 /**
  * Decodes a JWT token and returns the payload.
@@ -389,19 +393,15 @@ class Scraper {
   async scrapeSingleResult(cursor: number): Promise<void> {
     logger.debug(`Attempting to scrape result at cursor ${cursor}...`);
 
-    const resultsContainer = document.querySelector(RESULT_CONTAINER_SELECTOR);
-    logger.debug(
-      `Results container (cursor: ${cursor}):`,
-      resultsContainer ? 'Found' : 'Not found'
-    );
+    // Get all result tiles currently in the page
+    const elements = document.querySelectorAll(RESULT_SELECTOR);
+    logger.debug(`Result tiles in page (cursor: ${cursor}):`, elements.length);
 
-    if (!resultsContainer) {
-      logger.debug(`Results container is null at cursor ${cursor} (waiting for DOM)`);
-      throw new Error('Results container is null');
+    if (elements.length === 0) {
+      logger.debug(`No result tiles found at cursor ${cursor} (waiting for DOM)`);
+      throw new Error('No result tiles found');
     }
 
-    // Get all elements matching the selector
-    const elements = resultsContainer.querySelectorAll(RESULT_SELECTOR);
     // Safely select the nth element (cursor index), if it exists
     const resultContainer = elements.length > cursor ? elements[cursor] : null;
     // Log whether the element was found
@@ -427,7 +427,7 @@ class Scraper {
     resultContainer.scrollIntoView();
 
     // Find the link in the result container
-    const resultLink = resultContainer.querySelector('.ob5Hkd > a');
+    const resultLink = resultContainer.querySelector(RESULT_LINK_SELECTOR);
     logger.debug(`Result link for cursor ${cursor}:`, resultLink ? 'Found' : 'Not found');
 
     if (!resultLink) {
@@ -435,11 +435,11 @@ class Scraper {
       throw new Error(`Result link not found at cursor ${cursor}`);
     }
 
-    // Find the trigger div in the result container
-    const triggerDiv = resultContainer.querySelector('div.F0uyec');
-    if (triggerDiv) {
-      logger.debug(`Hovering result link at cursor ${cursor}...`);
-      simulateHover(triggerDiv);
+    // Hover the tile image so Google fills in the result link's href
+    const hoverTarget = resultContainer.querySelector(RESULT_HOVER_SELECTOR);
+    if (hoverTarget) {
+      logger.debug(`Hovering result image at cursor ${cursor}...`);
+      simulateHover(hoverTarget);
     }
 
     logger.debug(`Result link for cursor ${cursor}: ${resultLink}`);

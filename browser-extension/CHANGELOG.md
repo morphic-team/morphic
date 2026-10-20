@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed Google Images result parsing for Google's current page markup
 - Fixed the Close button on the error overlay
 
+### Changed
+- Build output moved from `dist/<target>/` to `dist/<browser>/<target>/`
+- Package renamed to `morphic-browser-extension`
+
 ## [1.0.1] - 2025-01-15
 
 ### Added

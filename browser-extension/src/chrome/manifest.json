@@ -1,5 +1,5 @@
 {
-  "name": "Morphs.io chrome extension",
+  "name": "Morphs.io extension",
   "manifest_version": 3,
   "content_scripts": [
     {

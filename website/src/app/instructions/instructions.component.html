@@ -36,6 +36,11 @@
 <h3 class="mb-3">2. Add search results to the survey</h3>
 <p>
   Now that you have a survey, you need to gather some images from Google Images. To do this, you 'Add search' on the 'Searches' tab of the survey. Morphic will perform a real image search on your behalf.
+  <br><br>
+  Gathering results requires the Morphic extension for Chrome, Edge or Firefox.
+  @for (store of stores; track store.browser) {
+    <br>• <a [href]="store.url" target="_blank">Install for {{ store.name }}</a>
+  }
 </p>
 
 <h3 class="mb-3">3. Fill out the survey</h3>

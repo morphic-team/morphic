@@ -26,14 +26,20 @@
           <p class="mb-0 mt-2">The Morphic {{ browserName }} extension is being updated. Gathering search results is unavailable until the new version is published.</p>
         </div>
 
-        <!-- User must install or update -->
-        <div *ngIf="!extensionStatus.isChecking && extensionNotice === 'update'" class="alert alert-warning">
-          <strong>Extension Update Required</strong>
-          <p class="mb-2 mt-2">To gather search results, install or update the Morphic {{ browserName }} extension to v{{REQUIRED_EXTENSION_VERSION}}.</p>
+        <!-- Browser has not applied the published build yet -->
+        <div *ngIf="!extensionStatus.isChecking && extensionNotice === 'pending'" class="alert alert-warning">
+          <strong>Update Pending</strong>
+          <p class="mb-0 mt-2">The Morphic extension will update automatically. Try again shortly.</p>
+        </div>
+
+        <!-- User must install -->
+        <div *ngIf="!extensionStatus.isChecking && extensionNotice === 'install'" class="alert alert-warning">
+          <strong>Extension Required</strong>
+          <p class="mb-2 mt-2">To gather search results, install the Morphic {{ browserName }} extension.</p>
           <a [href]="storeUrl"
              target="_blank"
              class="btn btn-sm btn-outline-primary">
-            Get Extension
+            Install Extension
           </a>
         </div>
 

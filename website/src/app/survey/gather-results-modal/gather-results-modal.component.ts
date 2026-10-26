@@ -133,10 +133,6 @@ export class GatherResultsModalComponent {
     return this.extensionService.isExtensionValid(this.extensionStatus);
   }
   
-  get REQUIRED_EXTENSION_VERSION(): string {
-    return this.extensionService.RECOMMENDED_EXTENSION_VERSION;
-  }
-
   isSupportedBrowser(): boolean {
     return this.extensionService.isSupportedBrowser();
   }

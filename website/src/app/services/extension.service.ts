@@ -30,10 +30,10 @@ export interface StoreListing {
 export class ExtensionService {
   readonly SUPPORTED_EXTENSION_VERSIONS = ['1.1.0'];
 
-  // Store listing per browser. The instructions page links all of them. Edge is
-  // missing until the extension has a Microsoft Edge Add-ons listing.
-  readonly STORE_URLS: Partial<Record<Exclude<ExtensionBrowser, 'unsupported'>, string>> = {
+  // Store listing per browser. The instructions page links all of them.
+  readonly STORE_URLS: Record<Exclude<ExtensionBrowser, 'unsupported'>, string> = {
     chrome: 'https://chrome.google.com/webstore/detail/fhigbmfhhlpkjbdamhjmfajhkfbkkgah',
+    edge: 'https://microsoftedge.microsoft.com/addons/detail/kjgjmdconpcnkepphmigpgjlbnjbldfn',
     firefox: 'https://addons.mozilla.org/firefox/addon/morphs-io-extension/'
   };
 
@@ -91,7 +91,7 @@ export class ExtensionService {
   }
 
   storeUrl(browser: ExtensionBrowser): string | null {
-    return browser === 'unsupported' ? null : this.STORE_URLS[browser] ?? null;
+    return browser === 'unsupported' ? null : this.STORE_URLS[browser];
   }
 
   noticeFor(status: ExtensionStatus): ExtensionNotice {

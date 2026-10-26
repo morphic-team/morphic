@@ -11,6 +11,6 @@ export class InstructionsComponent {
   readonly stores: StoreListing[];
 
   constructor(extensionService: ExtensionService) {
-    this.stores = extensionService.publishedStores();
+    this.stores = extensionService.storeListings();
   }
 }

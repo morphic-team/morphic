@@ -30,13 +30,16 @@ export interface StoreListing {
 export class ExtensionService {
   readonly SUPPORTED_EXTENSION_VERSIONS = ['1.1.0'];
 
-  // Store listing per browser. Null while the store does not carry a build in
-  // SUPPORTED_EXTENSION_VERSIONS, which puts that browser in the "updating" state.
-  readonly STORE_URLS: Record<Exclude<ExtensionBrowser, 'unsupported'>, string | null> = {
-    chrome: null,
-    edge: null,
+  // Store listing per browser. The instructions page links all of them. Edge is
+  // missing until the extension has a Microsoft Edge Add-ons listing.
+  readonly STORE_URLS: Partial<Record<Exclude<ExtensionBrowser, 'unsupported'>, string>> = {
+    chrome: 'https://chrome.google.com/webstore/detail/fhigbmfhhlpkjbdamhjmfajhkfbkkgah',
     firefox: 'https://addons.mozilla.org/firefox/addon/morphs-io-extension/'
   };
+
+  // Browsers whose store does not yet carry a version in SUPPORTED_EXTENSION_VERSIONS.
+  // Add a browser here when a release goes to review, remove it when approved.
+  readonly BROWSERS_AWAITING_REVIEW: ExtensionBrowser[] = ['chrome', 'edge'];
 
   // The extension's handshake content script runs on this site at document_start and
   // publishes the installed version as a data attribute on <html>.
@@ -88,7 +91,7 @@ export class ExtensionService {
   }
 
   storeUrl(browser: ExtensionBrowser): string | null {
-    return browser === 'unsupported' ? null : this.STORE_URLS[browser];
+    return browser === 'unsupported' ? null : this.STORE_URLS[browser] ?? null;
   }
 
   noticeFor(status: ExtensionStatus): ExtensionNotice {
@@ -98,17 +101,15 @@ export class ExtensionService {
     if (this.isExtensionValid(status)) {
       return 'none';
     }
-    if (!this.storeUrl(status.browser)) {
+    if (this.BROWSERS_AWAITING_REVIEW.includes(status.browser)) {
       return 'updating';
     }
     return status.isInstalled ? 'pending' : 'install';
   }
 
-  // Browsers whose store currently carries a compatible build.
-  publishedStores(): StoreListing[] {
-    return (Object.keys(this.STORE_URLS) as StoreListing['browser'][])
-      .filter(browser => this.STORE_URLS[browser] !== null)
-      .map(browser => ({ browser, name: this.browserName(browser), url: this.STORE_URLS[browser]! }));
+  storeListings(): StoreListing[] {
+    return (Object.entries(this.STORE_URLS) as [StoreListing['browser'], string][])
+      .map(([browser, url]) => ({ browser, name: this.browserName(browser), url }));
   }
 
   isVersionValid(version: string): boolean {

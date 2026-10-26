@@ -14,15 +14,21 @@ export interface ExtensionStatus {
 // - none: a compatible extension is installed
 // - unsupported: this browser cannot run the extension
 // - updating: the store has no compatible build yet, the user has to wait for us
-// - update: the store has a compatible build, the user has to install or update
-export type ExtensionNotice = 'none' | 'unsupported' | 'updating' | 'update';
+// - install: the store has a compatible build and the extension is not installed
+// - pending: the store has a compatible build and the browser has not applied it yet
+export type ExtensionNotice = 'none' | 'unsupported' | 'updating' | 'install' | 'pending';
+
+export interface StoreListing {
+  browser: Exclude<ExtensionBrowser, 'unsupported'>;
+  name: string;
+  url: string;
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class ExtensionService {
   readonly SUPPORTED_EXTENSION_VERSIONS = ['1.1.0'];
-  readonly RECOMMENDED_EXTENSION_VERSION = '1.1.0';
 
   // Store listing per browser. Null while the store does not carry a build in
   // SUPPORTED_EXTENSION_VERSIONS, which puts that browser in the "updating" state.
@@ -92,7 +98,17 @@ export class ExtensionService {
     if (this.isExtensionValid(status)) {
       return 'none';
     }
-    return this.storeUrl(status.browser) ? 'update' : 'updating';
+    if (!this.storeUrl(status.browser)) {
+      return 'updating';
+    }
+    return status.isInstalled ? 'pending' : 'install';
+  }
+
+  // Browsers whose store currently carries a compatible build.
+  publishedStores(): StoreListing[] {
+    return (Object.keys(this.STORE_URLS) as StoreListing['browser'][])
+      .filter(browser => this.STORE_URLS[browser] !== null)
+      .map(browser => ({ browser, name: this.browserName(browser), url: this.STORE_URLS[browser]! }));
   }
 
   isVersionValid(version: string): boolean {

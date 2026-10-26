@@ -13,13 +13,19 @@
     <button type="button" class="btn-close" aria-label="Close" (click)="dismissExtensionNotice()"></button>
   </div>
 
-  <div *ngIf="!extensionStatus.isChecking && showExtensionNotice && extensionNotice === 'update'" class="alert alert-warning alert-dismissible mb-3">
-    <strong>Extension Update Required</strong>
-    <p class="mb-2 mt-2">To gather search results, install or update the Morphic {{ browserName }} extension to v{{REQUIRED_EXTENSION_VERSION}}.</p>
+  <div *ngIf="!extensionStatus.isChecking && showExtensionNotice && extensionNotice === 'pending'" class="alert alert-warning alert-dismissible mb-3">
+    <strong>Update Pending</strong>
+    <p class="mb-0 mt-2">The Morphic extension will update automatically. Try again shortly.</p>
+    <button type="button" class="btn-close" aria-label="Close" (click)="dismissExtensionNotice()"></button>
+  </div>
+
+  <div *ngIf="!extensionStatus.isChecking && showExtensionNotice && extensionNotice === 'install'" class="alert alert-warning alert-dismissible mb-3">
+    <strong>Extension Required</strong>
+    <p class="mb-2 mt-2">To gather search results, install the Morphic {{ browserName }} extension.</p>
     <a [href]="storeUrl"
        target="_blank"
        class="btn btn-sm btn-outline-primary me-2">
-      Get Extension
+      Install Extension
     </a>
     <button type="button" class="btn-close" aria-label="Close" (click)="dismissExtensionNotice()"></button>
   </div>

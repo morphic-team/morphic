@@ -29,7 +29,7 @@ export class ExtensionService {
   readonly STORE_URLS: Record<Exclude<ExtensionBrowser, 'unsupported'>, string | null> = {
     chrome: null,
     edge: null,
-    firefox: null
+    firefox: 'https://addons.mozilla.org/firefox/addon/morphs-io-extension/'
   };
 
   // The extension's handshake content script runs on this site at document_start and

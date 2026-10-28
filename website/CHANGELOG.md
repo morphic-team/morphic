@@ -5,6 +5,15 @@ All notable changes to the Morphic Website will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.1] - 2026-10-28
+
+### Added
+- Install links for the Firefox and Edge extensions on the Searches tab and in the Gather Results dialog
+- Install links for all three browsers on the Instructions page
+
+### Changed
+- When your browser hasn't applied an extension update yet, you're told to try again shortly instead of being sent to the store
+
 ## [1.4.0] - 2026-10-20
 
 ### Added

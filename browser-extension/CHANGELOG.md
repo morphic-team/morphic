@@ -19,6 +19,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed the Close button on the error overlay
 
 ### Changed
+- Extension display name is "Morphs.io extension"
+- Firefox package is named morphic-firefox-extension
 - The website version check now uses the handshake content script in every browser. The Chrome
   build no longer has a background script or `externally_connectable`
 - Build output moved from `dist/<target>/` to `dist/<browser>/<target>/`

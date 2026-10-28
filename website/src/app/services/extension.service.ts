@@ -39,7 +39,7 @@ export class ExtensionService {
 
   // Browsers whose store does not yet carry a version in SUPPORTED_EXTENSION_VERSIONS.
   // Add a browser here when a release goes to review, remove it when approved.
-  readonly BROWSERS_AWAITING_REVIEW: ExtensionBrowser[] = ['chrome', 'edge'];
+  readonly BROWSERS_AWAITING_REVIEW: ExtensionBrowser[] = ['chrome'];
 
   // The extension's handshake content script runs on this site at document_start and
   // publishes the installed version as a data attribute on <html>.
